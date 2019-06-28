@@ -4,7 +4,7 @@
 # SFIR assignement: predicting campaign success on kickstarter using ML
 # author:   Julius Steidl
 # date:     28.06.2019
-# version:  0.3
+# version:  0.4
 # note:  directory with .csv files:  ./Kickstarter_2019-04-18T03_20_02_220Z/
 
 
@@ -94,6 +94,13 @@ def generate_statistics(all_campaigns):
     country_fail = defaultdict(int)
     country_cancel = defaultdict(int)
 
+    cat_success = defaultdict(int)
+    cat_fail = defaultdict(int)
+    cat_cancel = defaultdict(int)
+    subcat_success = defaultdict(int)
+    subcat_fail = defaultdict(int)
+    subcat_cancel = defaultdict(int)
+
     for campaign in all_campaigns:
 
         # values = backers_count,blurb,category,converted_pledged_amount,country,created_at,creator,currency,currency_symbol,currency_trailing_code,current_currency,deadline,disable_communication,friends,fx_rate,goal,id,is_backing,is_starrable,is_starred,launched_at,location,name,permissions,photo,pledged,profile,slug,source_url,spotlight,staff_pick,state,state_changed_at,static_usd_rate,urls,usd_pledged,usd_type
@@ -104,7 +111,14 @@ def generate_statistics(all_campaigns):
         spotlight = campaign['spotlight']
         staff_pick = campaign['staff_pick']
         country = str(campaign['country'])
-        print(country)
+
+        extract = re.search('\"slug\"\:\"(.+?)\/(.+?)\",\"', str(campaign['category']))
+        if extract:
+            category = extract.group(1)
+            subcat = category+'\t'+extract.group(2)
+        else:
+            category = 'default'; subcat = 'default/default'
+
 
         if state == 'successful':
             success_count += 1
@@ -116,6 +130,8 @@ def generate_statistics(all_campaigns):
             if spotlight == 'true':
                 spot_success += 1
             country_success[country] += 1
+            cat_success[category] += 1
+            subcat_success[subcat] += 1
 
         elif state == 'failed':
             fail_count += 1
@@ -127,6 +143,8 @@ def generate_statistics(all_campaigns):
             if spotlight == 'true':
                 spot_fail += 1
             country_fail[country] += 1
+            cat_fail[category] += 1
+            subcat_fail[subcat] += 1
 
         elif state == 'canceled':
             cancel_count += 1
@@ -138,27 +156,26 @@ def generate_statistics(all_campaigns):
             if spotlight == 'true':
                 spot_cancel += 1
             country_cancel[country] += 1
+            cat_cancel[category] += 1
+            subcat_cancel[subcat] += 1
 
-        print( str(campaign_count)+': '+campaign['name']+': '+campaign['blurb'] )
-        print('- state: '+state )
-        print('- backers: '+backers )
-        print('- pledged: '+pledged )
-        print('- goal: '+goal )
-        print('- country: '+country)
-        #output.write( str(campaign_count)+': ',campaign['blurb'])+'\n- state: ',campaign['state'])+'\n' )
+        print('\n',campaign_count,': ',campaign['name'],': ',campaign['blurb'])
+        print('- state: ',state)
+        print('- backers: ',backers)
+        print('- pledged: ',pledged)
+        print('- goal: ',goal)
+        print('- country: ',country)
+        print('- category: ',category,'\tsubcategory: ',subcat)
 
         for field, value in campaign.items():
 
             # filtering some insifignicant fields out:
-            if field not in ['name', 'blurb', 'state', 'backers', 'pledged', 'goal', 'country', 'profile', 'photo', 'urls', 'source_url', 'creator', 'location']:
-                print( '- '+field+': '+value )
-                #output.write ('- ',field)+': ',value)+'\n' )
+            if field not in ['name', 'blurb', 'state', 'backers', 'pledged', 'goal', 'country', 'category', 'profile', 'photo', 'urls', 'source_url', 'creator', 'location']:
+                print('-',field,': ',value)
 
-        print('\n')
-        #output.write('\n')
         campaign_count += 1
 
-    print('========== EXPLORATORY DATA ANALYSIS ==========\n')
+    print('\n========== EXPLORATORY DATA ANALYSIS ==========\n')
 
     print('> Total number of campaigns: ',campaign_count)
     print('\t- backers avg.:\t',int(float((backers_success+backers_fail+backers_cancel)/float(campaign_count))))
@@ -191,17 +208,38 @@ def generate_statistics(all_campaigns):
     print('\n> countries with most successful campaigns:')
     top_country_success = OrderedDict(sorted(country_success.items(), key=itemgetter(1), reverse=True))
     for country, value in top_country_success.items():
-        print('\t',country,' - ',value)
+        print('\t',country,'-',value)
 
     print('\n> countries with most failed campaigns:')
     top_country_fail = OrderedDict(sorted(country_fail.items(), key=itemgetter(1), reverse=True))
     for country, value in top_country_fail.items():
-        print('\t',country,' - ',value)
+        print('\t',country,'-',value)
 
     print('\n> countries with most canceled campaigns:')
     top_country_cancel = OrderedDict(sorted(country_cancel.items(), key=itemgetter(1), reverse=True))
     for country, value in top_country_cancel.items():
-        print('\t',country,' - ',value)
+        print('\t',country,'-',value)
+
+
+    print('\n> categories with most successful campaigns:')
+    top_cat_success = OrderedDict(sorted(cat_success.items(), key=itemgetter(1), reverse=True))
+    for cat, value in top_cat_success.items():
+        print('\t',cat,'-',value)
+
+    print('\n> subcategories with most successful campaigns:')
+    top_subcat_success = OrderedDict(sorted(subcat_success.items(), key=itemgetter(1), reverse=True))
+    for subcat, value in top_subcat_success.items():
+        print('\t',subcat,'-',value)
+
+    print('\n> categories with most failed campaigns:')
+    top_cat_fail = OrderedDict(sorted(cat_fail.items(), key=itemgetter(1), reverse=True))
+    for cat, value in top_cat_fail.items():
+        print('\t',cat,'-',value)
+
+    print('\n> subcategories with most failed campaigns:')
+    top_subcat_fail = OrderedDict(sorted(subcat_fail.items(), key=itemgetter(1), reverse=True))
+    for subcat, value in top_subcat_fail.items():
+        print('\t',subcat,'-',value)
 
     print('\n===============================================')
 
@@ -211,7 +249,6 @@ directory = 'Kickstarter_2019-04-18T03_20_02_220Z'  # date: 2019-05-16
 
 all_campaigns = import_datasets(directory)
 
-#output = open('output.txt','w', encoding="utf8")
 
 # load from .pickle file:
 filename = 'Kickstarter.csv'
@@ -219,6 +256,5 @@ with open(filename+'.pickle', 'rb') as handle:
     all_campaigns = []
     all_campaigns = pickle.load(handle)
 
-generate_statistics(all_campaigns)
 
-#output.close()
+generate_statistics(all_campaigns)
