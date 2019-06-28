@@ -3,18 +3,20 @@
 #
 # SFIR assignement: predicting campaign success on kickstarter using ML
 # author:   Julius Steidl
-# date:     19.06.2019
-# version:  0.1
+# date:     28.06.2019
+# version:  0.3
 # note:  directory with .csv files:  ./Kickstarter_2019-04-18T03_20_02_220Z/
 
-directory = 'Kickstarter_2019-04-18T03_20_02_220Z'
 
 import os
 import sys
 import csv
 import pickle
 import re
-#import numpy as np
+from collections import defaultdict
+from collections import OrderedDict
+from operator import itemgetter
+#from sklearn import numpy
 
 
 # fixing error "_csv.Error: field larger than field limit (131072)"
@@ -29,61 +31,194 @@ while True:
         maxInt = int(maxInt/10)
 
 
-output = open('output.txt','w', encoding="utf8")
 
-all_campaigns = []
+def import_datasets(directory):
 
-for filename in os.listdir(directory):
+    all_campaigns = []
 
-    # only using first file for now ('Kickstarter.csv'):
-    if filename.endswith(".csv") and filename == 'Kickstarter.csv':
+    for filename in os.listdir(directory):
 
-        with open(directory+'/'+filename, 'r', encoding="utf8", newline='') as csvfile:
+        # only using first file for now ('Kickstarter.csv'):
+        if filename.endswith(".csv") and filename == 'Kickstarter.csv':
 
-            fieldnames = csvfile.readline().split(',')
+            with open(directory+'/'+filename, 'r', encoding="utf8", newline='') as csvfile:
 
-            csvreader = csv.reader(csvfile, quotechar='"', delimiter=',',
-                     quoting=csv.QUOTE_ALL, skipinitialspace=True)
+                fieldnames = csvfile.readline().split(',')
 
-            for row in csvreader:
-                campaign = {}
-                for field, value in zip(fieldnames, row):
-                    campaign[field] = value
+                csvreader = csv.reader(csvfile, quotechar='"', delimiter=',',
+                         quoting=csv.QUOTE_ALL, skipinitialspace=True)
 
-                all_campaigns.append(campaign)
+                for row in csvreader:
+                    campaign = {}
+                    for field, value in zip(fieldnames, row):
+                        campaign[field] = value
 
-                continue
+                    all_campaigns.append(campaign)
 
-        # save as .pickle file  (-> not necessary to parse .csv files first):
-        with open(filename+'.pickle', 'wb') as handle:
-            pickle.dump(all_campaigns, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                    continue
 
-    else:
-        continue
+            # save as .pickle file  (-> not necessary to parse .csv files every time):
+            with open(filename+'.pickle', 'wb') as handle:
+                pickle.dump(all_campaigns, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    # load from .pickle file:
-    with open(filename+'.pickle', 'rb') as handle:
-        all_campaigns = []
-        all_campaigns = pickle.load(handle)
+        else:
+            continue
+
+    return all_campaigns
 
 
-    counter = 0
+
+def generate_statistics(all_campaigns):
+
+    campaign_count = 0
+    success_count = 0
+    backers_success = 0
+    pledged_success = 0
+    goal_success = 0
+    spot_success = 0
+    pick_success = 0
+    fail_count = 0
+    backers_fail = 0
+    pledged_fail = 0
+    goal_fail = 0
+    spot_fail = 0
+    pick_fail = 0
+    cancel_count = 0
+    backers_cancel = 0
+    pledged_cancel = 0
+    goal_cancel = 0
+    spot_cancel = 0
+    pick_cancel = 0
+
+    country_success = defaultdict(int)
+    country_fail = defaultdict(int)
+    country_cancel = defaultdict(int)
+
     for campaign in all_campaigns:
-        # values = backers_count,blurb,category,converted_pledged_amount,country,created_at,creator,currency,currency_symbol,currency_trailing_code,current_currency,deadline,disable_communication,friends,fx_rate,goal,id,is_backing,is_starrable,is_starred,launched_at,location,name,permissions,photo,pledged,profile,slug,source_url,spotlight,staff_pick,state,state_changed_at,static_usd_rate,urls,usd_pledged,usd_type
 
-        print( str(counter)+': '+campaign['blurb'] )
-        print('- state: '+campaign['state'] )
-        output.write( str(counter)+': '+str(campaign['blurb'])+'\n- state: '+str(campaign['state'])+'\n' )
+        # values = backers_count,blurb,category,converted_pledged_amount,country,created_at,creator,currency,currency_symbol,currency_trailing_code,current_currency,deadline,disable_communication,friends,fx_rate,goal,id,is_backing,is_starrable,is_starred,launched_at,location,name,permissions,photo,pledged,profile,slug,source_url,spotlight,staff_pick,state,state_changed_at,static_usd_rate,urls,usd_pledged,usd_type
+        state = campaign['state']
+        backers = campaign['backers_count']
+        pledged = campaign['usd_pledged']
+        goal = campaign['goal']
+        spotlight = campaign['spotlight']
+        staff_pick = campaign['staff_pick']
+        country = str(campaign['country'])
+        print(country)
+
+        if state == 'successful':
+            success_count += 1
+            backers_success = backers_success + float(backers)
+            pledged_success = pledged_success + float(pledged)
+            goal_success = goal_success + float(goal)
+            if staff_pick == 'true':
+                pick_success += 1
+            if spotlight == 'true':
+                spot_success += 1
+            country_success[country] += 1
+
+        elif state == 'failed':
+            fail_count += 1
+            backers_fail = backers_fail + float(backers)
+            pledged_fail = pledged_fail + float(pledged)
+            goal_fail = goal_fail + float(goal)
+            if staff_pick == 'true':
+                pick_fail += 1
+            if spotlight == 'true':
+                spot_fail += 1
+            country_fail[country] += 1
+
+        elif state == 'canceled':
+            cancel_count += 1
+            backers_cancel = backers_cancel + float(backers)
+            pledged_cancel = pledged_cancel + float(pledged)
+            goal_cancel = goal_cancel + float(goal)
+            if staff_pick == 'true':
+                pick_cancel += 1
+            if spotlight == 'true':
+                spot_cancel += 1
+            country_cancel[country] += 1
+
+        print( str(campaign_count)+': '+campaign['name']+': '+campaign['blurb'] )
+        print('- state: '+state )
+        print('- backers: '+backers )
+        print('- pledged: '+pledged )
+        print('- goal: '+goal )
+        print('- country: '+country)
+        #output.write( str(campaign_count)+': ',campaign['blurb'])+'\n- state: ',campaign['state'])+'\n' )
 
         for field, value in campaign.items():
 
             # filtering some insifignicant fields out:
-            if field not in ['blurb', 'state', 'profile', 'photo', 'urls', 'source_url', 'creator', 'location']:
+            if field not in ['name', 'blurb', 'state', 'backers', 'pledged', 'goal', 'country', 'profile', 'photo', 'urls', 'source_url', 'creator', 'location']:
                 print( '- '+field+': '+value )
-                output.write ('- '+str(field)+': '+str(value)+'\n' )
+                #output.write ('- ',field)+': ',value)+'\n' )
+
         print('\n')
-        output.write('\n')
+        #output.write('\n')
+        campaign_count += 1
 
-        counter += 1
+    print('========== EXPLORATORY DATA ANALYSIS ==========\n')
 
-output.close()
+    print('> Total number of campaigns: ',campaign_count)
+    print('\t- backers avg.:\t',int(float((backers_success+backers_fail+backers_cancel)/float(campaign_count))))
+    print('\t- pledged avg.:\t',int(float((pledged_success+pledged_cancel+pledged_cancel)/float(campaign_count))),' $')
+    print('\t- goal avg.:\t',int(float((goal_success+goal_fail+goal_cancel)/float(campaign_count))),' $')
+    print('\t- staff pick:\t',int(100 * float(pick_success+pick_fail+pick_cancel)/float(campaign_count)),' %')
+    print('\t- spotlight:\t',int(100 * float(spot_success+spot_fail+spot_cancel)/float(campaign_count)),' %\n\n')
+
+    print('> successful:  ',int(100 * float(success_count)/float(campaign_count)),' %')
+    print('\t- backers avg.:\t',int(float(backers_success/float(success_count))))
+    print('\t- pledged avg.:\t',int(float(pledged_success/float(success_count))),' $')
+    print('\t- goal avg.:\t',int(float(goal_success/float(success_count))),' $')
+    print('\t- staff pick:\t',int(100 * float(pick_success)/float(success_count)),' %')
+    print('\t- spotlight:\t',int(100 * float(spot_success)/float(success_count)),' %\n')
+
+    print('> failed:  ',int(100 * float(fail_count)/float(campaign_count)),' %')
+    print('\t- backers avg.:\t',int(float(backers_fail/float(fail_count))))
+    print('\t- pledged avg.:\t',int(float(pledged_fail/float(fail_count))),' $')
+    print('\t- goal avg.:\t',int(float(goal_fail/float(fail_count))),' $')
+    print('\t- staff pick:\t',int(100 * float(pick_fail)/float(fail_count)),' %')
+    print('\t- spotlight:\t',int(100 * float(spot_fail)/float(fail_count)),' %\n')
+
+    print('> canceled:  ',int(100 * float(cancel_count)/float(campaign_count)),' %')
+    print('\t- backers avg.:\t',int(float(backers_cancel/float(cancel_count))))
+    print('\t- pledged avg.:\t',int(float(pledged_cancel/float(cancel_count))),' $')
+    print('\t- goal avg.:\t',int(float(goal_cancel/float(cancel_count))),' $')
+    print('\t- staff pick:\t',int(100 * float(pick_cancel)/float(cancel_count)),' %')
+    print('\t- spotlight:\t',int(100 * float(spot_cancel)/float(cancel_count)),' %\n')
+
+    print('\n> countries with most successful campaigns:')
+    top_country_success = OrderedDict(sorted(country_success.items(), key=itemgetter(1), reverse=True))
+    for country, value in top_country_success.items():
+        print('\t',country,' - ',value)
+
+    print('\n> countries with most failed campaigns:')
+    top_country_fail = OrderedDict(sorted(country_fail.items(), key=itemgetter(1), reverse=True))
+    for country, value in top_country_fail.items():
+        print('\t',country,' - ',value)
+
+    print('\n> countries with most canceled campaigns:')
+    top_country_cancel = OrderedDict(sorted(country_cancel.items(), key=itemgetter(1), reverse=True))
+    for country, value in top_country_cancel.items():
+        print('\t',country,' - ',value)
+
+    print('\n===============================================')
+
+
+
+directory = 'Kickstarter_2019-04-18T03_20_02_220Z'  # date: 2019-05-16
+
+all_campaigns = import_datasets(directory)
+
+#output = open('output.txt','w', encoding="utf8")
+
+# load from .pickle file:
+filename = 'Kickstarter.csv'
+with open(filename+'.pickle', 'rb') as handle:
+    all_campaigns = []
+    all_campaigns = pickle.load(handle)
+
+generate_statistics(all_campaigns)
+
+#output.close()
