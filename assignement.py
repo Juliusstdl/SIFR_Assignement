@@ -3,8 +3,8 @@
 #
 # SFIR assignement: predicting campaign success on kickstarter using ML
 # author:   Julius Steidl
-# date:     06.07.2019
-# version:  1.0
+# date:     15.07.2019
+# version:  1.2
 # note:     directory with .csv files:  ./Kickstarter_2019-04-18T03_20_02_220Z/
 
 import os
@@ -14,7 +14,18 @@ import ast
 import re
 import operator
 from datetime import datetime
+from collections import defaultdict
+
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import normalize
+from sklearn.preprocessing import LabelEncoder
+
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.feature_selection import VarianceThreshold
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
+from sklearn.feature_selection import GenericUnivariateSelect
+from sklearn.feature_selection import SelectFromModel
 
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
@@ -25,86 +36,116 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.linear_model import LogisticRegression
+
+pd.options.mode.chained_assignment = None  # default='warn'
 
 
-
-def import_datasets(directory):
+def import_datasets(directory, number_of_files):
+    print('> Importing',number_of_files,'.csv-files from folder: ',directory)
+    filecount = 0
 
     # Iterating over all .csv files in subdirectory:
     for filename in os.listdir(directory):
 
-        # only using first file for now ('Kickstarter.csv'):
-        if filename.endswith(".csv") and filename == 'Kickstarter.csv':
+        if filename.endswith(".csv") and filecount < number_of_files:
+            print(' '+str(filecount)+': '+filename)
+            filecount += 1
 
             with open(directory+'/'+filename, 'r', encoding="utf8", newline='') as csvfile:
 
                 raw_data = pd.read_csv('Kickstarter_2019-04-18T03_20_02_220Z/'+filename, header=None)
 
+                # selecting dataframe columns for import:
                 data = raw_data[[31,16,22,0,3,15,4,30,29,20,11]]
 
+                # using first line as index:
                 headers = data.iloc[0]
-
                 data = pd.DataFrame(data.values[1:], columns=headers)
 
 
-                # Parsing 'category'-column strings as individual columns/features:
-                cat_id = []; name_cat = []; cat = []; subcat = []; pos = []; parent_id = []
+                # Parsing 'category'-column string as individual columns/features:
+                cat_id = []; cat_name = []; subcat_name = []; pos = []; parent_id = []
 
-                for string in raw_data[2].astype(str):
+                for string in [str(x) for x in raw_data[2][1:]]:
 
-                    cat_mask = re.compile('{"id":(\d+?),"name":"(.+?)","slug":"(.+?)(\/(.+?))?","position":(\d+?)(,"parent_id":(\d+?))?,')
+                    cat_mask = re.compile('{"id":(\d+?),.+"slug":"(.+?)(\/(.+?))?","position":(\d+?)(,"parent_id":(\d+?))?,')
                     extract = re.search(cat_mask, string)
 
-                    if extract:
-                        if extract.group(1) is not None:
-                            cat_id.append(int(extract.group(1)))
-                        else:
-                            cat_id.append(0)
+                    if extract and extract.group(1) is not None:
+                        cat_id.append(int(extract.group(1)))
+                    else:
+                        cat_id.append(0)
 
-                        if extract.group(2) is not None:
-                            name_cat.append(extract.group(2))
-                        else:
-                            name_cat.append('default')
+                    if extract and extract.group(2) is not None:
+                        cat_name.append(extract.group(2))
+                    else:
+                        cat_name.append('null')
 
-                        if extract.group(3) is not None:
-                            cat.append(extract.group(3))
-                        else:
-                            cat.append('default')
+                    if extract and extract.group(4) is not None:
+                        subcat_name.append(extract.group(4))
+                    else:
+                        subcat_name.append('null')
 
-                        if extract.group(5) is not None:
-                            subcat.append(extract.group(5))
-                        else:
-                            subcat.append('default')
+                    if extract and extract.group(5) is not None:
+                        pos.append(int(extract.group(5)))
+                    else:
+                        pos.append(0)
 
-                        if extract.group(6) is not None:
-                            pos.append(int(extract.group(6)))
-                        else:
-                            pos.append(0)
-
-                        if extract.group(8) is not None:
-                            parent_id.append(int(extract.group(8)))
-                        else:
-                            parent_id.append(0)
+                    if extract and extract.group(7) is not None:
+                        parent_id.append(int(extract.group(7)))
+                    else:
+                        parent_id.append(0)
 
 
-                # Parsing 'creator'-column strings as individual columns/features:
-                person_id = []; person_name = []; username = [];
+                # Parsing 'creator'-column string as individual columns/features:
+                person_id = []; person_name = [];
 
-                for string in raw_data[6].astype(str):
+                for string in [str(x) for x in raw_data[6][1:]]:
+                    string = str(string)
 
                     person_mask = re.compile('{"id":(\d+?),"name":"(.+?)"')
                     extract = re.search(person_mask, string)
 
-                    if extract:
-                        if extract.group(1) is not None:
-                            person_id.append(int(extract.group(1)))
-                        else:
-                            person_id.append(0)
+                    if extract and extract.group(1) is not None:
+                        person_id.append(int(extract.group(1)))
+                    else:
+                        person_id.append(0)
 
-                        if extract.group(2) is not None:
-                            person_name.append(extract.group(2))
-                        else:
-                            person_name.append('default')
+                    if extract and extract.group(2) is not None:
+                        person_name.append(extract.group(2))
+                    else:
+                        person_name.append('null')
+
+
+                # Parsing 'location'-column string as individual columns/features:
+                location_id = []; location_name = []; location_state = []; location_type = []
+
+                for string in [str(x) for x in raw_data[21][1:]]:
+
+                    location_mask = re.compile('{"id":(\d+?),.+"short_name":"(.+?)".+"state":"(.+?)","type":"(.+?)"')
+                    extract = re.search(location_mask, string)
+
+                    if extract and extract.group(1) is not None:
+                        location_id.append(int(extract.group(1)))
+                    else:
+                        location_id.append(0)
+
+                    if extract and extract.group(2) is not None:
+                        location_name.append(extract.group(2))
+                    else:
+                        location_name.append('null')
+
+                    if extract and extract.group(3) is not None:
+                        location_state.append(extract.group(3))
+                    else:
+                        location_state.append('null')
+
+                    if extract and extract.group(4) is not None:
+                        location_type.append(extract.group(4))
+                    else:
+                        location_type.append('null')
 
 
                 # Calculating campaign duration (duration = 'deadline' - 'launched_at'):
@@ -118,8 +159,7 @@ def import_datasets(directory):
                     #print('launched at:',datetime.utcfromtimestamp(launched_at).strftime('%d-%m-%Y'), '- deadline:',datetime.utcfromtimestamp(deadline).strftime('%d-%m-%Y'), '- difference in days:',difference)
 
 
-            data = data.assign( cat_id = cat_id, name_cat = name_cat, category = cat, subcategory = subcat, pos = pos, parent_id = parent_id, person_id = person_id, person_name = person_name, duration = duration )
-
+            data = data.assign( cat_id = cat_id, cat_name = cat_name, subcat_name = subcat_name, pos = pos, parent_id = parent_id, person_id = person_id, person_name = person_name, location_id = location_id, location_name = location_name, location_state = location_state, location_type = location_type, duration = duration )
             # Coverting string-values in dataframe to numeric- & boolean-values:
             data['id'] = pd.to_numeric(data['id'])
             data['backers_count'] = pd.to_numeric(data['backers_count'])
@@ -131,8 +171,9 @@ def import_datasets(directory):
             data['spotlight'] = data['spotlight'].map(bool_dict)
 
             # Rearranging column sequence:
-            cols = ['state', 'name', 'id', 'backers_count', 'converted_pledged_amount', 'goal', 'staff_pick', 'spotlight', 'country', 'category', 'subcategory', 'pos', 'cat_id', 'parent_id', 'name_cat', 'person_name', 'person_id', 'duration', 'launched_at', 'deadline']
-            data = data[cols]
+            columns = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration']
+
+            data = data[columns]
 
         else:
             continue
@@ -191,178 +232,411 @@ def generate_statistics(data):
 
     top = 5
 
-    print('\n> countries with most successful campaigns:')
-    print(successful.country.value_counts()[:top])
-    print('\n> countries with most unsuccessful campaigns:')
-    print(unsuccessful.country.value_counts()[:top])
+    print('\n> Categories with most successful campaigns:')
+    print(successful.cat_name.value_counts()[:top])
+    print('\n> Categories with most unsuccessful campaigns:')
+    print(unsuccessful.cat_name.value_counts()[:top])
 
-    print('\n> categories with most successful campaigns:')
-    print(successful.category.value_counts()[:top])
-    print('\n> categories with most unsuccessful campaigns:')
-    print(unsuccessful.category.value_counts()[:top])
+    print('\n> Subcategories with most successful campaigns:')
+    print(successful.subcat_name.value_counts()[:top])
+    print('\n> Subcategories with most unsuccessful campaigns:')
+    print(unsuccessful.subcat_name.value_counts()[:top])
 
-    print('\n> subcategories with most successful campaigns:')
-    print(successful.subcategory.value_counts()[:top])
-    print('\n> subcategories with most unsuccessful campaigns:')
-    print(unsuccessful.subcategory.value_counts()[:top])
-
-    print('\n> persons with most successful campaigns:')
+    print('\n> Persons with most successful campaigns:')
     print(successful.person_name.value_counts()[:top])
-    print('\n> persons with most unsuccessful campaigns:')
+    print('\n> Persons with most unsuccessful campaigns:')
     print(unsuccessful.person_name.value_counts()[:top])
 
+    print('\n> Countries with most successful campaigns:')
+    print(successful.country.value_counts()[:top])
+    print('\n> Countries with most unsuccessful campaigns:')
+    print(unsuccessful.country.value_counts()[:top])
 
-def classify(features_test, labels_test, features_train, labels_train):
-    scores = {}
+    print('\n> Locations with most successful campaigns:')
+    print(successful.location_name.value_counts()[:top])
+    print('\n> Locations with most unsuccessful campaigns:')
+    print(unsuccessful.location_name.value_counts()[:top])
 
+    print('\n> States with most successful campaigns:')
+    print(successful.location_state.value_counts()[:top])
+    print('\n> States with most unsuccessful campaigns:')
+    print(unsuccessful.location_state.value_counts()[:top])
+
+
+def feature_encoding(data):
+    labelencoder = LabelEncoder()
+
+    # data = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration']
+
+    # Converting string values from 'state'-column into binary integers (0 / 1):
+    bool_dict = {'successful': True,'failed': False}
+    data['state'] = data['state'].map(bool_dict)
+
+    data['country'] = labelencoder.fit_transform(data['country'])
+    data['cat_name'] = labelencoder.fit_transform(data['cat_name'])
+    data['subcat_name'] = labelencoder.fit_transform(data['subcat_name'])
+    data['person_name'] = labelencoder.fit_transform(data['person_name'])
+    data['location_name'] = labelencoder.fit_transform(data['location_name'])
+    data['location_state'] = labelencoder.fit_transform(data['location_state'])
+    data['location_type'] = labelencoder.fit_transform(data['location_type'])
+    #data['duration'] = labelencoder.fit_transform(data['duration'])
+
+    #categories = labelencoder.categories_
+
+
+    # Encoding (Ordinal Encoder & One Hot Encoder):
+    #ordinalencoder = preprocessing.OrdinalEncoder()
+    #onehotencoder = preprocessing.OneHotEncoder()
+    #encoder.fit(data)
+    #encoder.transform([['foo','bar']])
+    #encoder.transform([['foo','bar'],['baz','quux']]).toarray()
+
+    #encoder = preprocessing.OneHotEncoder(categories=[categories, locations])
+
+    # One Hot Encoding features:
+    #data_dummies = pd.get_dummies(data)
+    #print(list(data.columns))
+    #print(list(data_dummies.columns))
+
+    return data
+
+
+def classify(features_test, labels_test, features_train, labels_train, feature_selection, cls_selection):
     print('\n\n============================== CLASSIFICATION ===============================\n')
 
-    # A) SVC:
-    cls_SVC = SVC(gamma='auto') #(gamma=2, C=1), (kernel="linear", C=0.025)
-    cls_SVC.fit(features_train, labels_train)
-    score_SVC = cls_SVC.score(features_test, labels_test)
-    scores['SVC'] = score_SVC
-
-    print('>',cls_SVC)
-    print('> Score:  ',score_SVC,'\n\n')
+    scores = {}; importances = {}
 
 
-    # B) KNeighbors:
-    cls_KNB = KNeighborsClassifier(n_neighbors=4) #3
-    cls_KNB.fit(features_train, labels_train)
-    score_KNB = cls_KNB.score(features_test, labels_test)
-    scores['KNeighbors'] = score_KNB
+    # A) Extra Trees:
+    ETC, name_ETC = cls_selection['ETC']
+    if ETC:
+        cls_ETC = ExtraTreesClassifier()
+        cls_ETC.fit(features_train, labels_train)
+        score_ETC = cls_ETC.score(features_test, labels_test)
+        importances_ETC = get_feature_importances(cls_ETC, feature_selection)
+        scores[name_ETC] = score_ETC
+        importances[name_ETC] = importances_ETC
 
-    print('>',cls_KNB)
-    print('> Score:  ',score_KNB,'\n\n')
-
-
-    # C) GaussianProcess:
-    cls_GPC = GaussianProcessClassifier()#(1.0 * RBF(1.0))
-    cls_GPC.fit(features_train, labels_train)
-    score_GPC = cls_GPC.score(features_test, labels_test)
-    scores['GaussianProcess'] = score_GPC
-
-    print('>',cls_GPC)
-    print('> Score:  ',score_GPC,'\n\n')
+        #print('>',cls_ETC)
+        #print('> Score:  ',score_ETC)
+        #print('> Feature Importances:\n', importances_ETC,'\n\n')
 
 
-    # D) DecisionTree:
-    cls_DCT = DecisionTreeClassifier(max_depth=5)
-    cls_DCT.fit(features_train, labels_train)
-    score_DCT = cls_DCT.score(features_test, labels_test)
-    scores['DecisionTree'] = score_DCT
+    # B) Random Forest:
+    RFC, name_RFC = cls_selection['RFC']
+    if RFC:
+        cls_RFC = RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1)
+        cls_RFC.fit(features_train, labels_train)
+        score_RFC = cls_RFC.score(features_test, labels_test)
+        importances_RFC = get_feature_importances(cls_RFC, feature_selection)
+        scores[name_RFC] = score_RFC
+        importances[name_RFC] = importances_RFC
 
-    print('>',cls_DCT)
-    print('> Score:  ',score_DCT,'\n\n')
-
-
-    # E) GaussianNB:
-    cls_GNB = GaussianNB()
-    cls_GNB.fit(features_train, labels_train)
-    score_GNB = cls_GNB.score(features_test, labels_test)
-    scores['GaussianNB'] = score_GNB
-
-    print('>',cls_GNB)
-    print('> Score:  ',score_GNB,'\n\n')
+        #print('>',cls_RFC)
+        #print('> Score:  ',score_RFC)
+        #print('> Feature Importances:\n', importances_RFC,'\n\n')
 
 
-    # F) MLP:
-    cls_MLP = MLPClassifier(alpha=1, max_iter=1000)
-    cls_MLP.fit(features_train, labels_train)
-    score_MLP = cls_MLP.score(features_test, labels_test)
-    scores['MLP'] = score_MLP
+    # C) AdaBoost:
+    ABC, name_ABC = cls_selection['ABC']
+    if ABC:
+        cls_ABC = AdaBoostClassifier()
+        cls_ABC.fit(features_train, labels_train)
+        score_ABC = cls_ABC.score(features_test, labels_test)
+        importances_ABC = get_feature_importances(cls_ABC, feature_selection)
+        scores[name_ABC] = score_ABC
+        importances[name_ABC] = importances_ABC
 
-    print('>',cls_MLP)
-    print('> Score:  ',score_MLP,'\n\n')
-
-
-    return scores
-
-
-
-# I.-II. Importing Dataset & Data Cleaning:
-
-directory = 'Kickstarter_2019-04-18T03_20_02_220Z'  # date: 2019-05-16
-
-# saving / loading dataframe as .pickle file  (-> not necessary to parse .csv-files every time):
-# NOTE:  uncomment next two lines for skipping import of new dataset from .csv-files:
-data_new = import_datasets(directory)
-data_new.to_pickle(directory+'.pickle')
-
-data = pd.read_pickle('./'+directory+'.pickle')
+        #print('>',cls_ABC)
+        #print('> Score:  ',score_ABC)
+        #print('> Feature Importances:\n', importances_ABC,'\n\n')
 
 
+    # D) Decision Tree:
+    DCT, name_DCT = cls_selection['DCT']
+    if DCT:
+        cls_DCT = DecisionTreeClassifier(max_depth=5)
+        cls_DCT.fit(features_train, labels_train)
+        score_DCT = cls_DCT.score(features_test, labels_test)
+        importances_DCT = get_feature_importances(cls_DCT, feature_selection)
+        scores[name_DCT] = score_DCT
+        importances[name_DCT] = importances_DCT
 
-# III. Exploratory data analysis:
-# Generating some statistics for getting insight into dataset & for supporting manual feature-selection decisions:
-generate_statistics(data)
-
-
-
-# Printing dataframe header (= all imported features & labels):
-headers = data.iloc[0]
-
-print('\n============================= DATAFRAME HEADER ==============================')
-print(headers)
-
-
-
-# Filtering out entries (=campaigns) with 'canceled' or 'live' state values:
-data = data.loc[data['state'].isin(['successful','failed'])]
-
-# Converting string values from 'state'-column into binary integers (0 / 1):
-bool_dict = {'successful': 1,'failed': 0}
-data['state'] = data['state'].map(bool_dict)
-
-# Converting boolean values from 'staff_pick' & 'spotlight'-column into binary integers (0 / 1):
-#bool_dict2 = {True: 1, True: 0}
-#data['staff_pick'] = data['staff_pick'].map(bool_dict2)
-#data['spotlight'] = data['spotlight'].map(bool_dict2)
+        #print('>',cls_DCT)
+        #print('> Score:  ',score_DCT)
+        #print('> Feature Importance:\n', importances_DCT,'\n\n')
 
 
+    # E) KNearestNeighbors:
+    KNB, name_KNB = cls_selection['KNB']
+    if KNB:
+        cls_KNB = KNeighborsClassifier(n_neighbors=4) #3
+        cls_KNB.fit(features_train, labels_train)
+        score_KNB = cls_KNB.score(features_test, labels_test)
+        scores[name_KNB] = score_KNB
 
-# IV. Data division into Training and Test datasets
-ratio = 0.3
-
-test_set, train_set = train_test_split(data, test_size=ratio)
-
-print('\n============================= DATASET DIVISION ==============================\n')
-print('> split ratio:\t',ratio,'/',1.0-ratio)
-print('> Testset:\t',test_set.shape)
-print('> Trainingset:\t',train_set.shape)
-print('> Full Dataset:\t',data.shape)
-
+        #print('>',cls_KNB)
+        #print('> Score:  ',score_KNB,'\n\n')
 
 
-# V. Feature-Selection:
+    # F) Linear SVC:
+    LSV, name_LSV = cls_selection['LSV']
+    if LSV:
+        cls_LSV = SVC(kernel="linear", C=0.025) # C=0.01, penalty="l1", dual=False)
+        cls_LSV.fit(features_train, labels_train)
+        score_LSV = cls_LSV.score(features_test, labels_test)
+        scores[name_LSV] = score_LSV
 
-# NOTE:  manually add/remove features in following line forfeature-selection:
-feature_selection = ['backers_count', 'converted_pledged_amount', 'staff_pick']#, 'goal']
-# features = ['name', 'id', 'backers_count', 'converted_pledged_amount', 'goal', 'staff_pick', 'spotlight', 'country', 'category', 'subcategory', 'pos', 'cat_id', 'parent_id', 'name_cat', 'person_name', 'person_id', 'duration', 'launched_at', 'deadline']
+        #print('>',cls_LSV)
+        #print('> Score:  ',score_LSV,'\n\n')
 
-features_test = test_set[feature_selection]
-labels_test = test_set['state'] # labels = 'state'
-
-features_train = train_set[feature_selection]
-labels_train = train_set['state']
-
-print('\n============================= FEATURE-SELECTION =============================\n')
-print('> Selected features:')
-for feature in feature_selection:
-    print(' ',feature, end=',')
-
+        # Feature selection using SelectFromModel:
+        #cls_LSV = LinearSVC(C=0.01, penalty="l1", dual=False).fit(data_features, data_labels)
+        #model = SelectFromModel(cls_LSV, prefit=True)
+        #features_train_new = model.transform(features_train)
 
 
-# VI. Classification:
-scores = classify(features_test, labels_test, features_train, labels_train)
+    # G) RBF SVC:
+    RBF, name_RBF = cls_selection['RBF']
+    if RBF:
+        cls_RBF = SVC(gamma=2, C=1) # gamma='auto')
+        cls_RBF.fit(features_train, labels_train)
+        score_RBF = cls_RBF.score(features_test, labels_test)
+        scores[name_RBF] = score_RBF
 
-top_scores = sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
+        #print('>',cls_RBF)
+        #print('> Score:  ',score_RBF,'\n\n')
 
-print('============================= CLASSIFIER RATING =============================\n')
-i = 1
-for cls, score in top_scores:
-    print('  '+str(i)+'. '+str(cls)+':\t'+str(score))
-    i += 1
 
-print('\n=============================================================================')
+    # H) Gaussian Process:
+    GPC, name_GPC = cls_selection['GPC']
+    if GPC:
+        cls_GPC = GaussianProcessClassifier()#(1.0 * RBF(1.0))
+        cls_GPC.fit(features_train, labels_train)
+        score_GPC = cls_GPC.score(features_test, labels_test)
+        scores[name_GPC] = score_GPC
+
+        #print('>',cls_GPC)
+        #print('> Score:  ',score_GPC,'\n\n')
+
+
+    # I) Neural Network (MLP):
+    MLP, name_MLP = cls_selection['MLP']
+    if MLP:
+        cls_MLP = MLPClassifier(alpha=1, max_iter=1000)
+        cls_MLP.fit(features_train, labels_train)
+        score_MLP = cls_MLP.score(features_test, labels_test)
+        scores[name_MLP] = score_MLP
+
+        #print('>',cls_MLP)
+        #print('> Score:  ',score_MLP,'\n\n')
+
+
+    # J) Logistic Regression:
+    LRC, name_LRC = cls_selection['LRC']
+    if LRC:
+        cls_LRC = LogisticRegression()
+        cls_LRC.fit(features_train, labels_train)
+        score_LRC = cls_LRC.score(features_test, labels_test)
+        scores[name_LRC] = score_LRC
+
+        #print('>',cls_LRC)
+        #print('> Score:  ',score_LRC,'\n\n')
+
+
+    # J) Quadratic Discriminant Analysis (QDA):
+    QDA, name_QDA = cls_selection['QDA']
+    if QDA:
+        cls_QDA = QuadraticDiscriminantAnalysis()
+        cls_QDA.fit(features_train, labels_train)
+        score_QDA = cls_QDA.score(features_test, labels_test)
+        scores[name_QDA] = score_QDA
+
+        #print('>',cls_QDA)
+        #print('> Score:  ',score_QDA,'\n\n')
+
+
+    # K) Gaussian Naive Bayes:
+    GNB, name_GNB = cls_selection['GNB']
+    if GNB:
+        cls_GNB = GaussianNB()
+        cls_GNB.fit(features_train, labels_train)
+        score_GNB = cls_GNB.score(features_test, labels_test)
+        scores[name_GNB] = score_GNB
+
+        #print('>',cls_GNB)
+        #print('> Score:  ',score_GNB,'\n\n')
+
+
+    scores = sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
+
+    return (scores, importances)
+
+
+def get_feature_importances(classifier, feature_selection):
+    feature_importance = {}
+
+    importances = classifier.feature_importances_
+    indices = np.argsort(importances)
+
+    for i, value in zip(indices, importances):
+        feature_importance[feature_selection[i]] = value
+
+    feature_importance = sorted(feature_importance.items(), key=operator.itemgetter(1), reverse=True)
+
+    return feature_importance
+
+
+def rank_features(importances):
+    feature_ranking = defaultdict(list)
+
+    for cls_name, features in importances.items():
+        for feature, value in features:
+            feature_ranking[feature].append(value)
+
+    for feature, values in feature_ranking.items():
+        values.sort(reverse = True)
+        avg_value = sum(values) / len(values)
+        feature_ranking[feature] = avg_value
+        #print(feature,':',avg_value,'\n\t',values,'\n')
+
+    feature_ranking = sorted(feature_ranking.items(), key=operator.itemgetter(1), reverse=True)
+
+    return feature_ranking
+
+
+
+def main():
+
+    # I. Importing Dataset & Data Cleaning:
+
+    directory = 'Kickstarter_2019-04-18T03_20_02_220Z'  # date: 2019-05-16
+
+    # NOTE:  set value of .csv-files beeing imported from the directory:
+    number_of_files = 25
+
+    # saving / loading dataframe as .pickle file  (-> not necessary to parse .csv-files every time):
+    # NOTE:  uncomment next two lines for skipping import of new dataset from .csv-files:
+    data_imported = import_datasets(directory, number_of_files)
+    data_imported.to_pickle(directory+'.pickle')
+
+    data = pd.read_pickle('./'+directory+'.pickle')
+
+
+
+    # II. Exploratory data analysis:
+
+    # Generating some statistics for getting insight into dataset & for supporting manual feature-selection decisions:
+    # NOTE:  Function call is optional
+    generate_statistics(data)
+
+
+    # Printing dataframe header (= all imported features & labels):
+    print('\n============================= DATAFRAME HEADER ==============================')
+    print(data.iloc[0]) # =header
+
+
+
+    # III. Further Data Cleaning & Encoding:
+
+    # Filtering out entries (=campaigns) with 'canceled' or 'live' state values (as label). Just using 'successful' and 'failed' campaigns for classification:
+    data_filtered = data.loc[data['state'].isin(['successful','failed'])]
+
+    # Encoding string-value columns to logical datatypes (binary & ordinal) for classification:
+    data_encoded = feature_encoding(data_filtered)
+
+
+
+    # IV. Feature-Selection:
+
+    # a) Manual Feature-Pre-Selection:
+
+    # NOTE:  manually add/remove features in following line forfeature-selection:
+    feature_preselection = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration'] #'spotlight'
+    # features = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration']
+
+    data_features = data_encoded[feature_preselection]
+    data_labels = data_encoded['state']
+
+    print('\n============================= FEATURE-SELECTION =============================\n')
+    print('> Manual Feature-Pre-Selection:')
+    for feature in feature_preselection:
+        print(' ',feature, end=',')
+    print('\n> Imported Dataset after Feature-Pre-Selection:\t',data_features.shape)
+
+
+    # b) Automatic Feature-Selection:
+
+    # Removing features with low variance:
+    remover = VarianceThreshold(threshold=(.8 * (1 - .8)))
+    #data_features = remover.fit_transform(data_features)
+    #print(data_features.iloc[0]) # =header
+
+
+    # Univariate automatic feature selection:
+    #data_features = SelectKBest(chi2, k=2).fit_transform(data_features, data_labels)
+    #trans = GenericUnivariateSelect(score_func=lambda data_features, data_labels: data_features.mean(axis=0), mode='percentile', param=50)
+    #chars_X_trans = trans.fit_transform(chars_X, chars_y)
+
+
+
+    # V. Data division into Training and Test datasets & Normalization:
+    ratio = 0.3
+
+    features_test, features_train, labels_test, labels_train = train_test_split(data_features, data_labels, test_size=ratio)
+
+    print('\n============================= DATASET DIVISION ==============================\n')
+    print('> split ratio:\t',ratio,'/',1.0-ratio)
+    print('> Testset:\t',features_test.shape)
+    print('> Trainingset:\t',features_test.shape)
+    print('> Full imported Dataset:\t',data.shape)
+
+
+    # Normalization (L1 & L2):
+    features_test= normalize(features_test, norm='l2') # norm='l1'
+    features_train = normalize(features_train, norm='l2') # norm='l1'
+
+
+
+    # VI. Classification:
+
+    # cls_selection is used for manually enabeling the individual classifiers.
+    # NOTE:  setting boolean value, eanbles/disables classifiers
+    cls_selection = {
+    'ETC': (True, 'ExtraTrees'),
+    'RFC': (True, 'RandomForest'),
+    'ABC': (True, 'AdaBoost'),
+    'DCT': (True, 'DecisionTree'),
+    'KNB': (True, 'NearestNeighbors'),
+    'LSV': (True, 'LinearSVC'),
+    'RBF': (True, 'RBF_SVC'),
+    'GPC': (True, 'GaussianProcess'),
+    'MLP': (True, 'NeuralNetwork'),
+    'LRC': (True, 'LogisticRegression'),
+    'QDA': (True, 'QuadraticDiscriminantAnalysis'),
+    'GNB': (True, 'NaiveBayes') }
+
+
+    scores, importances = classify(features_test, labels_test, features_train, labels_train, feature_preselection, cls_selection)
+
+    feature_ranking = rank_features(importances)
+
+
+    print('============================= CLASSIFIER RANKING =============================\n')
+    i = 1
+    for cls, score in scores:
+        print('  '+str(i)+'. '+str(cls)+':\t\t\t'+str(score))
+        i += 1
+
+    print('\n============================== FEATURE RANKING ==============================\n')
+    i = 1
+    for feature, importance in feature_ranking:
+        print('  '+str(i)+'. '+str(feature)+':\t\t\t'+str(importance))
+        i += 1
+
+    print('\n=============================================================================')
+
+
+
+if __name__ == '__main__':
+    main()
