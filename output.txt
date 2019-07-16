@@ -1,0 +1,266 @@
+> Importing 25 .csv-files from folder:  Kickstarter_2019-04-18T03_20_02_220Z
+ 0: Kickstarter.csv
+ 1: Kickstarter001.csv
+ 2: Kickstarter002.csv
+ 3: Kickstarter003.csv
+ 4: Kickstarter004.csv
+ 5: Kickstarter005.csv
+ 6: Kickstarter006.csv
+ 7: Kickstarter007.csv
+ 8: Kickstarter008.csv
+ 9: Kickstarter009.csv
+ 10: Kickstarter010.csv
+ 11: Kickstarter011.csv
+ 12: Kickstarter012.csv
+ 13: Kickstarter013.csv
+ 14: Kickstarter014.csv
+ 15: Kickstarter015.csv
+ 16: Kickstarter016.csv
+ 17: Kickstarter017.csv
+ 18: Kickstarter018.csv
+ 19: Kickstarter019.csv
+ 20: Kickstarter020.csv
+ 21: Kickstarter021.csv
+ 22: Kickstarter022.csv
+ 23: Kickstarter023.csv
+ 24: Kickstarter024.csv
+
+========================= EXPLORATORY DATA ANALYSIS =========================
+> Total number of campaigns:  3786
+	- backers avg.:	 118
+	- pledged avg.:	 10243 $
+	- goal avg.:	 75820 $
+	- staff pick:	 12 %
+	- spotlight:	 59  %
+	- duration avg.: 29 days
+
+> successful:   58 %
+	- backers avg.:	 198
+	- pledged avg.:	 17144 $
+	- goal avg.:	 9734 $
+	- staff pick:	 20 %
+	- spotlight:	 100 %
+	- duration avg.: 30 days
+
+> unsuccessful:   34 %
+	- backers avg.:	 12
+	- pledged avg.:	 1062 $
+	- goal avg.:	 208638 $
+	- staff pick:	 3 %
+	- spotlight:	 3 %
+	- duration avg.: 34 days
+
+============================ TOP (UN)SUCCESSFUL =============================
+
+> Categories with most successful campaigns:
+film & video    374
+art             324
+music           305
+games           201
+publishing      201
+Name: cat_name, dtype: int64
+
+> Categories with most unsuccessful campaigns:
+film & video    240
+technology      175
+art             153
+food            144
+games           110
+Name: cat_name, dtype: int64
+
+> Subcategories with most successful campaigns:
+null              131
+tabletop games    115
+illustration      113
+documentary       100
+comic books        88
+Name: subcat_name, dtype: int64
+
+> Subcategories with most unsuccessful campaigns:
+apps             69
+web              60
+comedy           55
+playing cards    45
+sculpture        42
+Name: subcat_name, dtype: int64
+
+> Persons with most successful campaigns:
+Jeff Dee                    4
+NightstormWest (deleted)    4
+Carrie Benson               3
+Evolutionary Comics         3
+For Freedoms                3
+Name: person_name, dtype: int64
+
+> Persons with most unsuccessful campaigns:
+Sebastian      3
+Eric           2
+David          2
+James          2
+Janeé Brown    2
+Name: person_name, dtype: int64
+
+> Countries with most successful campaigns:
+US    1568
+GB     281
+CA      91
+AU      43
+FR      31
+Name: country, dtype: int64
+
+> Countries with most unsuccessful campaigns:
+US    877
+GB    124
+CA     60
+AU     41
+IT     24
+Name: country, dtype: int64
+
+> Locations with most successful campaigns:
+Los Angeles, CA      123
+London, UK            91
+New York, NY          89
+Brooklyn, NY          50
+San Francisco, CA     43
+Name: location_name, dtype: int64
+
+> Locations with most unsuccessful campaigns:
+Los Angeles, CA    60
+New York, NY       39
+London, UK         35
+Chicago, IL        24
+Dallas, TX         16
+Name: location_name, dtype: int64
+
+> States with most successful campaigns:
+CA         308
+England    238
+NY         194
+WA          78
+TX          73
+Name: location_state, dtype: int64
+
+> States with most unsuccessful campaigns:
+CA         140
+England    110
+NY          87
+TX          63
+FL          52
+Name: location_state, dtype: int64
+
+============================= DATAFRAME HEADER ==============================
+0
+state                                           successful
+id                                              1733362627
+name                        Let's Go! Fundraising Campaign
+backers_count                                           11
+converted_pledged_amount                               686
+goal                                                     3
+country                                                 US
+staff_pick                                           False
+spotlight                                             True
+launched_at                                     1543600648
+deadline                                        1546398000
+cat_id                                                 292
+cat_name                                      film & video
+subcat_name                                         comedy
+pos                                                      3
+parent_id                                               11
+person_id                                       1700426892
+person_name                                       Sam Pfab
+location_id                                        2471390
+location_name                                  Phoenix, AZ
+location_state                                          AZ
+location_type                                         Town
+duration                                                32
+divergence                                             683
+Name: 0, dtype: object
+
+============================= FEATURE-SELECTION =============================
+
+> Manual Feature-Pre-Selection:
+  backers_count,  converted_pledged_amount,  goal,  country,  staff_pick,  launched_at,  deadline,  cat_id,  cat_name,  subcat_name,  pos,  parent_id,  person_id,  person_name,  location_id,  location_name,  location_state,  location_type,  duration,
+
+> Imported Dataset after Feature-Pre-Selection:	 (3457, 19)
+
+============================= DATASET DIVISION ==============================
+
+> split ratio:	 0.3 / 0.7
+> Testset:	 (2419, 19)
+> Trainingset:	 (2419, 19)
+> Full imported Dataset:	 (3786, 24) 
+
+============================== CLASSIFICATION ===============================
+
+
+============================= CLASSIFIER RANKING =============================
+
+  1. ExtraTrees:			0.8739148408433237
+  2. QuadraticDiscriminantAnalysis:			0.7804878048780488
+  3. DecisionTree:			0.7767672591980157
+  4. AdaBoost:			0.7494832575444399
+  5. NaiveBayes:			0.6544026457213725
+  6. RandomForest:			0.6345597354278627
+  7. LinearSVC:			0.6242248863166597
+  8. RBF_SVC:			0.6242248863166597
+  9. GaussianProcess:			0.6242248863166597
+  10. NeuralNetwork:			0.6242248863166597
+  11. LogisticRegression:			0.6242248863166597
+  12. NearestNeighbors:			0.5274906986357999
+
+============================== FEATURE RANKING ==============================
+
+> Table containing importance of every feature with different classifiers:
+
+              backers_count  converted_pledged_amount      goal   country  staff_pick  launched_at  deadline    cat_id  cat_name  subcat_name       pos  parent_id  person_id  person_name  location_id  location_name  location_state  location_type  duration
+ExtraTrees              0.0                       0.0  0.049929  0.125087    0.064267     0.059062       0.0  0.008978  0.000000     0.133885  0.123734   0.232777   0.066787          0.0     0.068400       0.000000        0.000000       0.000000  0.067095
+RandomForest            0.0                       0.0  0.001844  0.000000    0.000000     0.001684       0.0  0.097734  0.025473     0.179121  0.000000   0.086657   0.024908          0.0     0.027745       0.000000        0.554834       0.000000  0.000000
+AdaBoost                0.0                       0.0  0.000000  0.000000    0.000000     0.300000       0.0  0.000000  0.000000     0.000000  0.080000   0.000000   0.000000          0.0     0.000000       0.300000        0.180000       0.020000  0.120000
+DecisionTree            0.0                       0.0  0.000000  0.000000    0.000000     0.082038       0.0  0.000000  0.000000     0.000000  0.000000   0.000000   0.009744          0.0     0.000000       0.487645        0.405128       0.007866  0.007578
+Total                   0.0                       0.0  0.051773  0.125087    0.064267     0.442784       0.0  0.106712  0.025473     0.313007  0.203734   0.319433   0.101439          0.0     0.096145       0.787645        1.139962       0.027866  0.194673 
+
+> Features with highest importance with different classifiers:
+  1. location_state:			1.1399622560777105
+  2. location_name:			0.7876447612321369
+  3. launched_at:			0.44278382319676757
+  4. parent_id:			0.3194334093380414
+  5. subcat_name:			0.31300661250724693
+  6. pos:			0.2037338013664916
+  7. duration:			0.19467297400314412
+  8. country:			0.12508707619405174
+  9. cat_id:			0.10671151123889196
+  10. person_id:			0.10143946356012722
+  11. location_id:			0.09614499802381855
+  12. staff_pick:			0.06426738638475882
+  13. goal:			0.051772524660414244
+  14. location_type:			0.027866376701527442
+  15. cat_name:			0.025473025514871253
+  16. backers_count:			0.0
+  17. converted_pledged_amount:			0.0
+  18. deadline:			0.0
+  19. person_name:			0.0
+
+> Univariate automatic feature selection:
+  Applying SelectKBest class to extract top best features:
+                     Feature         Score
+2                       goal  3.833044e+08
+5                launched_at  5.736578e+07
+6                   deadline  5.338571e+07
+14               location_id  2.830641e+07
+12                 person_id  2.168624e+07
+1   converted_pledged_amount  1.854906e+07
+0              backers_count  2.150453e+05
+7                     cat_id  5.252092e+04
+13               person_name  4.415338e+02
+18                  duration  4.200601e+02
+11                 parent_id  2.708990e+02
+15             location_name  2.153696e+02
+4                 staff_pick  1.698894e+02
+8                   cat_name  9.149873e+01
+9                subcat_name  2.618057e+01
+3                    country  7.099648e+00
+16            location_state  4.328427e+00
+10                       pos  1.048578e+00
+17             location_type  5.886485e-02
+
+=============================================================================

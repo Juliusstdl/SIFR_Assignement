@@ -3,8 +3,8 @@
 #
 # SFIR assignement: predicting campaign success on kickstarter using ML
 # author:   Julius Steidl
-# date:     15.07.2019
-# version:  1.2
+# date:     16.07.2019
+# version:  1.3
 # note:     directory with .csv files:  ./Kickstarter_2019-04-18T03_20_02_220Z/
 
 import os
@@ -148,8 +148,8 @@ def import_datasets(directory, number_of_files):
                         location_type.append('null')
 
 
-                # Calculating campaign duration (duration = 'deadline' - 'launched_at'):
-                duration = []
+                # Calculating campaign duration:
+                duration = []; divergence = []
 
                 for index, row in data.iterrows():
                     launched_at = row['launched_at']
@@ -158,8 +158,11 @@ def import_datasets(directory, number_of_files):
                     duration.append(difference)
                     #print('launched at:',datetime.utcfromtimestamp(launched_at).strftime('%d-%m-%Y'), '- deadline:',datetime.utcfromtimestamp(deadline).strftime('%d-%m-%Y'), '- difference in days:',difference)
 
+                    # Calculating divergence between pledged money and goal:
+                    divergence.append(float(row['converted_pledged_amount'])-float(row['goal']))
 
-            data = data.assign( cat_id = cat_id, cat_name = cat_name, subcat_name = subcat_name, pos = pos, parent_id = parent_id, person_id = person_id, person_name = person_name, location_id = location_id, location_name = location_name, location_state = location_state, location_type = location_type, duration = duration )
+
+            data = data.assign( cat_id = cat_id, cat_name = cat_name, subcat_name = subcat_name, pos = pos, parent_id = parent_id, person_id = person_id, person_name = person_name, location_id = location_id, location_name = location_name, location_state = location_state, location_type = location_type, duration = duration , divergence = divergence)
             # Coverting string-values in dataframe to numeric- & boolean-values:
             data['id'] = pd.to_numeric(data['id'])
             data['backers_count'] = pd.to_numeric(data['backers_count'])
@@ -171,7 +174,7 @@ def import_datasets(directory, number_of_files):
             data['spotlight'] = data['spotlight'].map(bool_dict)
 
             # Rearranging column sequence:
-            columns = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration']
+            columns = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence']
 
             data = data[columns]
 
@@ -266,7 +269,7 @@ def generate_statistics(data):
 def feature_encoding(data):
     labelencoder = LabelEncoder()
 
-    # data = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration']
+    # data = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence']
 
     # Converting string values from 'state'-column into binary integers (0 / 1):
     bool_dict = {'successful': True,'failed': False}
@@ -302,9 +305,9 @@ def feature_encoding(data):
 
 
 def classify(features_test, labels_test, features_train, labels_train, feature_selection, cls_selection):
-    print('\n\n============================== CLASSIFICATION ===============================\n')
 
-    scores = {}; importances = {}
+    scores = {}
+    importances = pd.DataFrame(columns=feature_selection)
 
 
     # A) Extra Trees:
@@ -315,11 +318,7 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         score_ETC = cls_ETC.score(features_test, labels_test)
         importances_ETC = get_feature_importances(cls_ETC, feature_selection)
         scores[name_ETC] = score_ETC
-        importances[name_ETC] = importances_ETC
-
-        #print('>',cls_ETC)
-        #print('> Score:  ',score_ETC)
-        #print('> Feature Importances:\n', importances_ETC,'\n\n')
+        importances.loc[name_ETC] = importances_ETC
 
 
     # B) Random Forest:
@@ -330,11 +329,7 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         score_RFC = cls_RFC.score(features_test, labels_test)
         importances_RFC = get_feature_importances(cls_RFC, feature_selection)
         scores[name_RFC] = score_RFC
-        importances[name_RFC] = importances_RFC
-
-        #print('>',cls_RFC)
-        #print('> Score:  ',score_RFC)
-        #print('> Feature Importances:\n', importances_RFC,'\n\n')
+        importances.loc[name_RFC] = importances_RFC
 
 
     # C) AdaBoost:
@@ -345,11 +340,7 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         score_ABC = cls_ABC.score(features_test, labels_test)
         importances_ABC = get_feature_importances(cls_ABC, feature_selection)
         scores[name_ABC] = score_ABC
-        importances[name_ABC] = importances_ABC
-
-        #print('>',cls_ABC)
-        #print('> Score:  ',score_ABC)
-        #print('> Feature Importances:\n', importances_ABC,'\n\n')
+        importances.loc[name_ABC] = importances_ABC
 
 
     # D) Decision Tree:
@@ -360,11 +351,7 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         score_DCT = cls_DCT.score(features_test, labels_test)
         importances_DCT = get_feature_importances(cls_DCT, feature_selection)
         scores[name_DCT] = score_DCT
-        importances[name_DCT] = importances_DCT
-
-        #print('>',cls_DCT)
-        #print('> Score:  ',score_DCT)
-        #print('> Feature Importance:\n', importances_DCT,'\n\n')
+        importances.loc[name_DCT] = importances_DCT
 
 
     # E) KNearestNeighbors:
@@ -375,9 +362,6 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         score_KNB = cls_KNB.score(features_test, labels_test)
         scores[name_KNB] = score_KNB
 
-        #print('>',cls_KNB)
-        #print('> Score:  ',score_KNB,'\n\n')
-
 
     # F) Linear SVC:
     LSV, name_LSV = cls_selection['LSV']
@@ -386,9 +370,6 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         cls_LSV.fit(features_train, labels_train)
         score_LSV = cls_LSV.score(features_test, labels_test)
         scores[name_LSV] = score_LSV
-
-        #print('>',cls_LSV)
-        #print('> Score:  ',score_LSV,'\n\n')
 
         # Feature selection using SelectFromModel:
         #cls_LSV = LinearSVC(C=0.01, penalty="l1", dual=False).fit(data_features, data_labels)
@@ -404,9 +385,6 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         score_RBF = cls_RBF.score(features_test, labels_test)
         scores[name_RBF] = score_RBF
 
-        #print('>',cls_RBF)
-        #print('> Score:  ',score_RBF,'\n\n')
-
 
     # H) Gaussian Process:
     GPC, name_GPC = cls_selection['GPC']
@@ -415,9 +393,6 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         cls_GPC.fit(features_train, labels_train)
         score_GPC = cls_GPC.score(features_test, labels_test)
         scores[name_GPC] = score_GPC
-
-        #print('>',cls_GPC)
-        #print('> Score:  ',score_GPC,'\n\n')
 
 
     # I) Neural Network (MLP):
@@ -428,9 +403,6 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         score_MLP = cls_MLP.score(features_test, labels_test)
         scores[name_MLP] = score_MLP
 
-        #print('>',cls_MLP)
-        #print('> Score:  ',score_MLP,'\n\n')
-
 
     # J) Logistic Regression:
     LRC, name_LRC = cls_selection['LRC']
@@ -439,9 +411,6 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         cls_LRC.fit(features_train, labels_train)
         score_LRC = cls_LRC.score(features_test, labels_test)
         scores[name_LRC] = score_LRC
-
-        #print('>',cls_LRC)
-        #print('> Score:  ',score_LRC,'\n\n')
 
 
     # J) Quadratic Discriminant Analysis (QDA):
@@ -452,9 +421,6 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         score_QDA = cls_QDA.score(features_test, labels_test)
         scores[name_QDA] = score_QDA
 
-        #print('>',cls_QDA)
-        #print('> Score:  ',score_QDA,'\n\n')
-
 
     # K) Gaussian Naive Bayes:
     GNB, name_GNB = cls_selection['GNB']
@@ -463,9 +429,6 @@ def classify(features_test, labels_test, features_train, labels_train, feature_s
         cls_GNB.fit(features_train, labels_train)
         score_GNB = cls_GNB.score(features_test, labels_test)
         scores[name_GNB] = score_GNB
-
-        #print('>',cls_GNB)
-        #print('> Score:  ',score_GNB,'\n\n')
 
 
     scores = sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
@@ -482,23 +445,17 @@ def get_feature_importances(classifier, feature_selection):
     for i, value in zip(indices, importances):
         feature_importance[feature_selection[i]] = value
 
-    feature_importance = sorted(feature_importance.items(), key=operator.itemgetter(1), reverse=True)
+    #feature_importance = sorted(feature_importance.items(), key=operator.itemgetter(1), reverse=True)
 
     return feature_importance
 
 
 def rank_features(importances):
-    feature_ranking = defaultdict(list)
+    importances.loc['Total',:]= importances.sum(axis=0)
 
-    for cls_name, features in importances.items():
-        for feature, value in features:
-            feature_ranking[feature].append(value)
-
-    for feature, values in feature_ranking.items():
-        values.sort(reverse = True)
-        avg_value = sum(values) / len(values)
-        feature_ranking[feature] = avg_value
-        #print(feature,':',avg_value,'\n\t',values,'\n')
+    feature_ranking = (importances.iloc[-1:].reset_index(drop=True)).to_dict()
+    for feature, value in feature_ranking.items():
+        feature_ranking[feature] = value.get(0)
 
     feature_ranking = sorted(feature_ranking.items(), key=operator.itemgetter(1), reverse=True)
 
@@ -552,8 +509,8 @@ def main():
     # a) Manual Feature-Pre-Selection:
 
     # NOTE:  manually add/remove features in following line forfeature-selection:
-    feature_preselection = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration'] #'spotlight'
-    # features = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration']
+    feature_preselection = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration']#, 'divergence'] #'spotlight'
+    # features = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence']
 
     data_features = data_encoded[feature_preselection]
     data_labels = data_encoded['state']
@@ -562,21 +519,27 @@ def main():
     print('> Manual Feature-Pre-Selection:')
     for feature in feature_preselection:
         print(' ',feature, end=',')
-    print('\n> Imported Dataset after Feature-Pre-Selection:\t',data_features.shape)
+    print('\n\n> Imported Dataset after Feature-Pre-Selection:\t',data_features.shape)
 
 
     # b) Automatic Feature-Selection:
 
+    # Univariate automatic feature selection:
+
+    # applying SelectKBest class to extract top 10 best features:
+    bestfeatures = SelectKBest(score_func=chi2, k=10)
+    fit = bestfeatures.fit(data_features, data_labels)
+    dfscores = pd.DataFrame(fit.scores_)
+    dfcolumns = pd.DataFrame(data_features.columns)
+    #concat two dataframes for better visualization
+    featureScores = pd.concat([dfcolumns,dfscores],axis=1)
+    featureScores.columns = ['Feature','Score']  #naming the dataframe columns
+
+
     # Removing features with low variance:
-    remover = VarianceThreshold(threshold=(.8 * (1 - .8)))
+    #remover = VarianceThreshold(threshold=(.8 * (1 - .8)))
     #data_features = remover.fit_transform(data_features)
     #print(data_features.iloc[0]) # =header
-
-
-    # Univariate automatic feature selection:
-    #data_features = SelectKBest(chi2, k=2).fit_transform(data_features, data_labels)
-    #trans = GenericUnivariateSelect(score_func=lambda data_features, data_labels: data_features.mean(axis=0), mode='percentile', param=50)
-    #chars_X_trans = trans.fit_transform(chars_X, chars_y)
 
 
 
@@ -589,7 +552,7 @@ def main():
     print('> split ratio:\t',ratio,'/',1.0-ratio)
     print('> Testset:\t',features_test.shape)
     print('> Trainingset:\t',features_test.shape)
-    print('> Full imported Dataset:\t',data.shape)
+    print('> Full imported Dataset:\t',data.shape,'\n')
 
 
     # Normalization (L1 & L2):
@@ -599,6 +562,7 @@ def main():
 
 
     # VI. Classification:
+    print('============================== CLASSIFICATION ===============================\n')
 
     # cls_selection is used for manually enabeling the individual classifiers.
     # NOTE:  setting boolean value, eanbles/disables classifiers
@@ -622,20 +586,27 @@ def main():
     feature_ranking = rank_features(importances)
 
 
-    print('============================= CLASSIFIER RANKING =============================\n')
+    print('\n============================= CLASSIFIER RANKING =============================\n')
     i = 1
     for cls, score in scores:
         print('  '+str(i)+'. '+str(cls)+':\t\t\t'+str(score))
         i += 1
 
     print('\n============================== FEATURE RANKING ==============================\n')
+
+    print('> Table containing importance of every feature with different classifiers:\n')
+    print(importances.to_string(),'\n')
+
+    print('> Features with highest importance with different classifiers:')
     i = 1
     for feature, importance in feature_ranking:
         print('  '+str(i)+'. '+str(feature)+':\t\t\t'+str(importance))
         i += 1
 
-    print('\n=============================================================================')
+    print('\n> Univariate automatic feature selection:\n  Applying SelectKBest class to extract top best features:')
+    print(featureScores.nlargest(19,'Score'))  #print n best features
 
+    print('\n=============================================================================')
 
 
 if __name__ == '__main__':
