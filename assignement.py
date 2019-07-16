@@ -149,7 +149,7 @@ def import_datasets(directory, number_of_files):
 
 
                 # Calculating campaign duration:
-                duration = []; divergence = []
+                duration = []; divergence = []; goal_exceeded = []
 
                 for index, row in data.iterrows():
                     launched_at = row['launched_at']
@@ -159,10 +159,19 @@ def import_datasets(directory, number_of_files):
                     #print('launched at:',datetime.utcfromtimestamp(launched_at).strftime('%d-%m-%Y'), '- deadline:',datetime.utcfromtimestamp(deadline).strftime('%d-%m-%Y'), '- difference in days:',difference)
 
                     # Calculating divergence between pledged money and goal:
-                    divergence.append(float(row['converted_pledged_amount'])-float(row['goal']))
+                    # divergence measeures the divergence value of pledged from goal in USD and can be positive or negative
+                    # goal_exceeded is True if pledged money exceeds the goal
+
+                    div = float(row['converted_pledged_amount']) - float(row['goal'])
+                    divergence.append(div)
+
+                    if div >= 0:
+                        goal_exceeded.append(True)
+                    else:
+                        goal_exceeded.append(False)
 
 
-            data = data.assign( cat_id = cat_id, cat_name = cat_name, subcat_name = subcat_name, pos = pos, parent_id = parent_id, person_id = person_id, person_name = person_name, location_id = location_id, location_name = location_name, location_state = location_state, location_type = location_type, duration = duration , divergence = divergence)
+            data = data.assign( cat_id = cat_id, cat_name = cat_name, subcat_name = subcat_name, pos = pos, parent_id = parent_id, person_id = person_id, person_name = person_name, location_id = location_id, location_name = location_name, location_state = location_state, location_type = location_type, duration = duration, divergence = divergence, goal_exceeded = goal_exceeded)
             # Coverting string-values in dataframe to numeric- & boolean-values:
             data['id'] = pd.to_numeric(data['id'])
             data['backers_count'] = pd.to_numeric(data['backers_count'])
@@ -174,7 +183,7 @@ def import_datasets(directory, number_of_files):
             data['spotlight'] = data['spotlight'].map(bool_dict)
 
             # Rearranging column sequence:
-            columns = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence']
+            columns = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence', 'divergence', 'goal_exceeded']
 
             data = data[columns]
 
@@ -269,7 +278,7 @@ def generate_statistics(data):
 def feature_encoding(data):
     labelencoder = LabelEncoder()
 
-    # data = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence']
+    # data = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence', 'goal_exceeded']
 
     # Converting string values from 'state'-column into binary integers (0 / 1):
     bool_dict = {'successful': True,'failed': False}
@@ -445,8 +454,6 @@ def get_feature_importances(classifier, feature_selection):
     for i, value in zip(indices, importances):
         feature_importance[feature_selection[i]] = value
 
-    #feature_importance = sorted(feature_importance.items(), key=operator.itemgetter(1), reverse=True)
-
     return feature_importance
 
 
@@ -509,8 +516,8 @@ def main():
     # a) Manual Feature-Pre-Selection:
 
     # NOTE:  manually add/remove features in following line forfeature-selection:
-    feature_preselection = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration']#, 'divergence'] #'spotlight'
-    # features = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence']
+    feature_preselection = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'goal_exceeded']#, 'divergence'] #'spotlight'
+    # features = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence', 'goal_exceeded']
 
     data_features = data_encoded[feature_preselection]
     data_labels = data_encoded['state']
@@ -527,7 +534,7 @@ def main():
     # Univariate automatic feature selection:
 
     # applying SelectKBest class to extract top 10 best features:
-    bestfeatures = SelectKBest(score_func=chi2, k=10)
+    bestfeatures = SelectKBest(score_func=chi2, k=20)
     fit = bestfeatures.fit(data_features, data_labels)
     dfscores = pd.DataFrame(fit.scores_)
     dfcolumns = pd.DataFrame(data_features.columns)
@@ -587,24 +594,23 @@ def main():
 
 
     print('\n============================= CLASSIFIER RANKING =============================\n')
-    i = 1
-    for cls, score in scores:
-        print('  '+str(i)+'. '+str(cls)+':\t\t\t'+str(score))
-        i += 1
+    cls_ranking = pd.DataFrame.from_dict(scores)
+    print(cls_ranking)
+
 
     print('\n============================== FEATURE RANKING ==============================\n')
 
     print('> Table containing importance of every feature with different classifiers:\n')
     print(importances.to_string(),'\n')
 
+
     print('> Features with highest importance with different classifiers:')
-    i = 1
-    for feature, importance in feature_ranking:
-        print('  '+str(i)+'. '+str(feature)+':\t\t\t'+str(importance))
-        i += 1
+    importance_ranking = pd.DataFrame.from_dict(feature_ranking)
+    print(importance_ranking)
+
 
     print('\n> Univariate automatic feature selection:\n  Applying SelectKBest class to extract top best features:')
-    print(featureScores.nlargest(19,'Score'))  #print n best features
+    print(featureScores.nlargest(20,'Score'))  #print n best features
 
     print('\n=============================================================================')
 

@@ -85,19 +85,19 @@ sculpture        42
 Name: subcat_name, dtype: int64
 
 > Persons with most successful campaigns:
-Jeff Dee                    4
 NightstormWest (deleted)    4
-Carrie Benson               3
-Evolutionary Comics         3
+Jeff Dee                    4
 For Freedoms                3
+Evolutionary Comics         3
+Carrie Benson               3
 Name: person_name, dtype: int64
 
 > Persons with most unsuccessful campaigns:
 Sebastian      3
-Eric           2
+Janeé Brown    2
 David          2
 James          2
-Janeé Brown    2
+Eric           2
 Name: person_name, dtype: int64
 
 > Countries with most successful campaigns:
@@ -113,7 +113,7 @@ US    877
 GB    124
 CA     60
 AU     41
-IT     24
+DE     24
 Name: country, dtype: int64
 
 > Locations with most successful campaigns:
@@ -174,71 +174,76 @@ location_state                                          AZ
 location_type                                         Town
 duration                                                32
 divergence                                             683
+divergence                                             683
+goal_exceeded                                         True
 Name: 0, dtype: object
 
 ============================= FEATURE-SELECTION =============================
 
 > Manual Feature-Pre-Selection:
-  backers_count,  converted_pledged_amount,  goal,  country,  staff_pick,  launched_at,  deadline,  cat_id,  cat_name,  subcat_name,  pos,  parent_id,  person_id,  person_name,  location_id,  location_name,  location_state,  location_type,  duration,
+  backers_count,  converted_pledged_amount,  goal,  country,  staff_pick,  launched_at,  deadline,  cat_id,  cat_name,  subcat_name,  pos,  parent_id,  person_id,  person_name,  location_id,  location_name,  location_state,  location_type,  duration,  goal_exceeded,
 
-> Imported Dataset after Feature-Pre-Selection:	 (3457, 19)
+> Imported Dataset after Feature-Pre-Selection:	 (3457, 20)
 
 ============================= DATASET DIVISION ==============================
 
 > split ratio:	 0.3 / 0.7
-> Testset:	 (2419, 19)
-> Trainingset:	 (2419, 19)
-> Full imported Dataset:	 (3786, 24) 
+> Testset:	 (2419, 20)
+> Trainingset:	 (2419, 20)
+> Full imported Dataset:	 (3786, 26) 
 
 ============================== CLASSIFICATION ===============================
 
 
 ============================= CLASSIFIER RANKING =============================
 
-  1. ExtraTrees:			0.8739148408433237
-  2. QuadraticDiscriminantAnalysis:			0.7804878048780488
-  3. DecisionTree:			0.7767672591980157
-  4. AdaBoost:			0.7494832575444399
-  5. NaiveBayes:			0.6544026457213725
-  6. RandomForest:			0.6345597354278627
-  7. LinearSVC:			0.6242248863166597
-  8. RBF_SVC:			0.6242248863166597
-  9. GaussianProcess:			0.6242248863166597
-  10. NeuralNetwork:			0.6242248863166597
-  11. LogisticRegression:			0.6242248863166597
-  12. NearestNeighbors:			0.5274906986357999
+                                0         1
+0                      ExtraTrees  0.854899
+1                    DecisionTree  0.785862
+2                        AdaBoost  0.728814
+3                      NaiveBayes  0.651095
+4                       LinearSVC  0.631253
+5                         RBF_SVC  0.631253
+6                 GaussianProcess  0.631253
+7                   NeuralNetwork  0.631253
+8              LogisticRegression  0.631253
+9                    RandomForest  0.630012
+10               NearestNeighbors  0.498967
+11  QuadraticDiscriminantAnalysis  0.368747
 
 ============================== FEATURE RANKING ==============================
 
 > Table containing importance of every feature with different classifiers:
 
-              backers_count  converted_pledged_amount      goal   country  staff_pick  launched_at  deadline    cat_id  cat_name  subcat_name       pos  parent_id  person_id  person_name  location_id  location_name  location_state  location_type  duration
-ExtraTrees              0.0                       0.0  0.049929  0.125087    0.064267     0.059062       0.0  0.008978  0.000000     0.133885  0.123734   0.232777   0.066787          0.0     0.068400       0.000000        0.000000       0.000000  0.067095
-RandomForest            0.0                       0.0  0.001844  0.000000    0.000000     0.001684       0.0  0.097734  0.025473     0.179121  0.000000   0.086657   0.024908          0.0     0.027745       0.000000        0.554834       0.000000  0.000000
-AdaBoost                0.0                       0.0  0.000000  0.000000    0.000000     0.300000       0.0  0.000000  0.000000     0.000000  0.080000   0.000000   0.000000          0.0     0.000000       0.300000        0.180000       0.020000  0.120000
-DecisionTree            0.0                       0.0  0.000000  0.000000    0.000000     0.082038       0.0  0.000000  0.000000     0.000000  0.000000   0.000000   0.009744          0.0     0.000000       0.487645        0.405128       0.007866  0.007578
-Total                   0.0                       0.0  0.051773  0.125087    0.064267     0.442784       0.0  0.106712  0.025473     0.313007  0.203734   0.319433   0.101439          0.0     0.096145       0.787645        1.139962       0.027866  0.194673 
+              backers_count  converted_pledged_amount      goal  country  staff_pick  launched_at  deadline  cat_id  cat_name  subcat_name       pos  parent_id  person_id  person_name  location_id  location_name  location_state  location_type  duration  goal_exceeded
+ExtraTrees              0.0                  0.000000  0.000000      0.0    0.124329     0.064984  0.072328     0.0  0.069355     0.050495  0.000000   0.121071   0.006789     0.075777     0.053222            0.0        0.000000       0.290580  0.000000        0.07107
+RandomForest            0.0                  0.004857  0.039274      0.0    0.000000     0.000000  0.000000     0.0  0.001814     0.047319  0.304324   0.000000   0.000000     0.000000     0.134634            0.0        0.022625       0.036289  0.408862        0.00000
+AdaBoost                0.0                  0.000000  0.000000      0.0    0.000000     0.240000  0.000000     0.0  0.100000     0.000000  0.200000   0.100000   0.000000     0.000000     0.000000            0.0        0.220000       0.140000  0.000000        0.00000
+DecisionTree            0.0                  0.000000  0.000000      0.0    0.000000     0.000000  0.000000     0.0  0.002080     0.000000  0.031419   0.015310   0.022725     0.000000     0.000000            0.0        0.501501       0.426964  0.000000        0.00000
+Total                   0.0                  0.004857  0.039274      0.0    0.124329     0.304984  0.072328     0.0  0.173249     0.097815  0.535743   0.236381   0.029515     0.075777     0.187856            0.0        0.744126       0.893834  0.408862        0.07107 
 
 > Features with highest importance with different classifiers:
-  1. location_state:			1.1399622560777105
-  2. location_name:			0.7876447612321369
-  3. launched_at:			0.44278382319676757
-  4. parent_id:			0.3194334093380414
-  5. subcat_name:			0.31300661250724693
-  6. pos:			0.2037338013664916
-  7. duration:			0.19467297400314412
-  8. country:			0.12508707619405174
-  9. cat_id:			0.10671151123889196
-  10. person_id:			0.10143946356012722
-  11. location_id:			0.09614499802381855
-  12. staff_pick:			0.06426738638475882
-  13. goal:			0.051772524660414244
-  14. location_type:			0.027866376701527442
-  15. cat_name:			0.025473025514871253
-  16. backers_count:			0.0
-  17. converted_pledged_amount:			0.0
-  18. deadline:			0.0
-  19. person_name:			0.0
+                           0         1
+0              location_type  0.893834
+1             location_state  0.744126
+2                        pos  0.535743
+3                   duration  0.408862
+4                launched_at  0.304984
+5                  parent_id  0.236381
+6                location_id  0.187856
+7                   cat_name  0.173249
+8                 staff_pick  0.124329
+9                subcat_name  0.097815
+10               person_name  0.075777
+11                  deadline  0.072328
+12             goal_exceeded  0.071070
+13                      goal  0.039274
+14                 person_id  0.029515
+15  converted_pledged_amount  0.004857
+16             backers_count  0.000000
+17                   country  0.000000
+18                    cat_id  0.000000
+19             location_name  0.000000
 
 > Univariate automatic feature selection:
   Applying SelectKBest class to extract top best features:
@@ -251,6 +256,7 @@ Total                   0.0                       0.0  0.051773  0.125087    0.0
 1   converted_pledged_amount  1.854906e+07
 0              backers_count  2.150453e+05
 7                     cat_id  5.252092e+04
+19             goal_exceeded  1.186796e+03
 13               person_name  4.415338e+02
 18                  duration  4.200601e+02
 11                 parent_id  2.708990e+02
