@@ -3,8 +3,8 @@
 #
 # SFIR assignement: predicting campaign success on kickstarter using ML
 # author:   Julius Steidl
-# date:     16.07.2019
-# version:  1.3
+# date:     18.07.2019
+# version:  1.4
 # note:     directory with .csv files:  ./Kickstarter_2019-04-18T03_20_02_220Z/
 
 import os
@@ -26,30 +26,73 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 from sklearn.feature_selection import GenericUnivariateSelect
 from sklearn.feature_selection import SelectFromModel
-
-from sklearn.svm import SVC
+'''
+from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.gaussian_process.kernels import RBF
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis, LinearDiscriminantAnalysis
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.linear_model import LogisticRegression
+'''
+from sklearn.tree import ExtraTreeClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm.classes import OneClassSVM
+from sklearn.neural_network.multilayer_perceptron import MLPClassifier
+from sklearn.neighbors.classification import RadiusNeighborsClassifier
+from sklearn.neighbors.classification import KNeighborsClassifier
+from sklearn.multioutput import ClassifierChain
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.multiclass import OutputCodeClassifier
+from sklearn.multiclass import OneVsOneClassifier
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.linear_model.stochastic_gradient import SGDClassifier
+from sklearn.linear_model.ridge import RidgeClassifierCV
+from sklearn.linear_model.ridge import RidgeClassifier
+from sklearn.linear_model.passive_aggressive import PassiveAggressiveClassifier
+from sklearn.gaussian_process.gpc import GaussianProcessClassifier
+from sklearn.ensemble.weight_boosting import AdaBoostClassifier
+from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
+from sklearn.ensemble.bagging import BaggingClassifier
+from sklearn.ensemble.forest import ExtraTreesClassifier
+from sklearn.ensemble.forest import RandomForestClassifier
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.naive_bayes import GaussianNB
+from sklearn.semi_supervised import LabelPropagation
+from sklearn.semi_supervised import LabelSpreading
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.svm import LinearSVC
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegressionCV
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.neighbors import NearestCentroid
+from sklearn.svm import NuSVC
+from sklearn.linear_model import Perceptron
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.svm import SVC
+#from sklearn.ensemble.voting_classifier import VotingClassifier
+#from sklearn.mixture import DPGMM
+#from sklearn.mixture import GMM
+#from sklearn.mixture import GaussianMixture
+#from sklearn.mixture import VBGMM
+
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-def import_datasets(directory, number_of_files):
-    print('> Importing',number_of_files,'.csv-files from folder: ',directory)
+def import_datasets(directory):
+    print('> Importing .csv-files from folder: ',directory)
     filecount = 0
 
     # Iterating over all .csv files in subdirectory:
     for filename in os.listdir(directory):
 
-        if filename.endswith(".csv") and filecount < number_of_files:
+        if filename.endswith(".csv"):
             print(' '+str(filecount)+': '+filename)
             filecount += 1
 
@@ -313,160 +356,59 @@ def feature_encoding(data):
     return data
 
 
-def classify(features_test, labels_test, features_train, labels_train, feature_selection, cls_selection):
+def classify(features_test, labels_test, features_train, labels_train, classifiers, feature_selection):
 
     scores = {}
-    importances = pd.DataFrame(columns=feature_selection)
+    importances_df = pd.DataFrame(columns=feature_selection)
 
+    for cls_name, tupel in classifiers.items():
+        active, classifier = tupel
+        if active:
+            classifier.fit(features_train, labels_train)
 
-    # A) Extra Trees:
-    ETC, name_ETC = cls_selection['ETC']
-    if ETC:
-        cls_ETC = ExtraTreesClassifier()
-        cls_ETC.fit(features_train, labels_train)
-        score_ETC = cls_ETC.score(features_test, labels_test)
-        importances_ETC = get_feature_importances(cls_ETC, feature_selection)
-        scores[name_ETC] = score_ETC
-        importances.loc[name_ETC] = importances_ETC
+            score = classifier.score(features_test, labels_test)
+            scores[cls_name] = score
 
+            # get feature importances:
+            try:
+                feature_importances = classifier.feature_importances_
+                importances = {}
+                indices = np.argsort(feature_importances)
 
-    # B) Random Forest:
-    RFC, name_RFC = cls_selection['RFC']
-    if RFC:
-        cls_RFC = RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1)
-        cls_RFC.fit(features_train, labels_train)
-        score_RFC = cls_RFC.score(features_test, labels_test)
-        importances_RFC = get_feature_importances(cls_RFC, feature_selection)
-        scores[name_RFC] = score_RFC
-        importances.loc[name_RFC] = importances_RFC
+                for i, value in zip(indices, feature_importances):
+                    importances[feature_selection[i]] = value
 
-
-    # C) AdaBoost:
-    ABC, name_ABC = cls_selection['ABC']
-    if ABC:
-        cls_ABC = AdaBoostClassifier()
-        cls_ABC.fit(features_train, labels_train)
-        score_ABC = cls_ABC.score(features_test, labels_test)
-        importances_ABC = get_feature_importances(cls_ABC, feature_selection)
-        scores[name_ABC] = score_ABC
-        importances.loc[name_ABC] = importances_ABC
-
-
-    # D) Decision Tree:
-    DCT, name_DCT = cls_selection['DCT']
-    if DCT:
-        cls_DCT = DecisionTreeClassifier(max_depth=5)
-        cls_DCT.fit(features_train, labels_train)
-        score_DCT = cls_DCT.score(features_test, labels_test)
-        importances_DCT = get_feature_importances(cls_DCT, feature_selection)
-        scores[name_DCT] = score_DCT
-        importances.loc[name_DCT] = importances_DCT
-
-
-    # E) KNearestNeighbors:
-    KNB, name_KNB = cls_selection['KNB']
-    if KNB:
-        cls_KNB = KNeighborsClassifier(n_neighbors=4) #3
-        cls_KNB.fit(features_train, labels_train)
-        score_KNB = cls_KNB.score(features_test, labels_test)
-        scores[name_KNB] = score_KNB
-
-
-    # F) Linear SVC:
-    LSV, name_LSV = cls_selection['LSV']
-    if LSV:
-        cls_LSV = SVC(kernel="linear", C=0.025) # C=0.01, penalty="l1", dual=False)
-        cls_LSV.fit(features_train, labels_train)
-        score_LSV = cls_LSV.score(features_test, labels_test)
-        scores[name_LSV] = score_LSV
+                importances_df.loc[cls_name] = importances
+            except:
+                continue
 
         # Feature selection using SelectFromModel:
         #cls_LSV = LinearSVC(C=0.01, penalty="l1", dual=False).fit(data_features, data_labels)
         #model = SelectFromModel(cls_LSV, prefit=True)
         #features_train_new = model.transform(features_train)
 
-
-    # G) RBF SVC:
-    RBF, name_RBF = cls_selection['RBF']
-    if RBF:
-        cls_RBF = SVC(gamma=2, C=1) # gamma='auto')
-        cls_RBF.fit(features_train, labels_train)
-        score_RBF = cls_RBF.score(features_test, labels_test)
-        scores[name_RBF] = score_RBF
-
-
-    # H) Gaussian Process:
-    GPC, name_GPC = cls_selection['GPC']
-    if GPC:
-        cls_GPC = GaussianProcessClassifier()#(1.0 * RBF(1.0))
-        cls_GPC.fit(features_train, labels_train)
-        score_GPC = cls_GPC.score(features_test, labels_test)
-        scores[name_GPC] = score_GPC
-
-
-    # I) Neural Network (MLP):
-    MLP, name_MLP = cls_selection['MLP']
-    if MLP:
-        cls_MLP = MLPClassifier(alpha=1, max_iter=1000)
-        cls_MLP.fit(features_train, labels_train)
-        score_MLP = cls_MLP.score(features_test, labels_test)
-        scores[name_MLP] = score_MLP
-
-
-    # J) Logistic Regression:
-    LRC, name_LRC = cls_selection['LRC']
-    if LRC:
-        cls_LRC = LogisticRegression()
-        cls_LRC.fit(features_train, labels_train)
-        score_LRC = cls_LRC.score(features_test, labels_test)
-        scores[name_LRC] = score_LRC
-
-
-    # J) Quadratic Discriminant Analysis (QDA):
-    QDA, name_QDA = cls_selection['QDA']
-    if QDA:
-        cls_QDA = QuadraticDiscriminantAnalysis()
-        cls_QDA.fit(features_train, labels_train)
-        score_QDA = cls_QDA.score(features_test, labels_test)
-        scores[name_QDA] = score_QDA
-
-
-    # K) Gaussian Naive Bayes:
-    GNB, name_GNB = cls_selection['GNB']
-    if GNB:
-        cls_GNB = GaussianNB()
-        cls_GNB.fit(features_train, labels_train)
-        score_GNB = cls_GNB.score(features_test, labels_test)
-        scores[name_GNB] = score_GNB
-
-
     scores = sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
+    scores_df = pd.DataFrame.from_dict(scores)
+    scores_df.columns = ['Classifier','Score']
 
-    return (scores, importances)
-
-
-def get_feature_importances(classifier, feature_selection):
-    feature_importance = {}
-
-    importances = classifier.feature_importances_
-    indices = np.argsort(importances)
-
-    for i, value in zip(indices, importances):
-        feature_importance[feature_selection[i]] = value
-
-    return feature_importance
+    return (scores_df, importances_df)
 
 
-def rank_features(importances):
+def rank_feature_importance(importances):
     importances.loc['Total',:]= importances.sum(axis=0)
 
-    feature_ranking = (importances.iloc[-1:].reset_index(drop=True)).to_dict()
-    for feature, value in feature_ranking.items():
-        feature_ranking[feature] = value.get(0)
+    importance_ranking = (importances.iloc[-1:].reset_index(drop=True)).to_dict()
+    for feature, value in importance_ranking.items():
+        importance_ranking[feature] = value.get(0)
 
-    feature_ranking = sorted(feature_ranking.items(), key=operator.itemgetter(1), reverse=True)
+    importance_ranking = sorted(importance_ranking.items(), key=operator.itemgetter(1), reverse=True)
 
-    return feature_ranking
+    # Create dataframe from dictionry with results:
+    importance_ranking_df = pd.DataFrame.from_dict(importance_ranking)
+    importance_ranking_df.columns = ['Feature', 'Importance']
+    importance_ranking_df.sort_values(by=['Importance'])
+
+    return importance_ranking_df
 
 
 
@@ -476,12 +418,9 @@ def main():
 
     directory = 'Kickstarter_2019-04-18T03_20_02_220Z'  # date: 2019-05-16
 
-    # NOTE:  set value of .csv-files beeing imported from the directory:
-    number_of_files = 25
-
     # saving / loading dataframe as .pickle file  (-> not necessary to parse .csv-files every time):
     # NOTE:  uncomment next two lines for skipping import of new dataset from .csv-files:
-    data_imported = import_datasets(directory, number_of_files)
+    data_imported = import_datasets(directory)
     data_imported.to_pickle(directory+'.pickle')
 
     data = pd.read_pickle('./'+directory+'.pickle')
@@ -533,15 +472,15 @@ def main():
 
     # Univariate automatic feature selection:
 
-    # applying SelectKBest class to extract top 10 best features:
+    # Applying SelectKBest class to extract top best features:
     bestfeatures = SelectKBest(score_func=chi2, k=20)
     fit = bestfeatures.fit(data_features, data_labels)
-    dfscores = pd.DataFrame(fit.scores_)
-    dfcolumns = pd.DataFrame(data_features.columns)
-    #concat two dataframes for better visualization
-    featureScores = pd.concat([dfcolumns,dfscores],axis=1)
-    featureScores.columns = ['Feature','Score']  #naming the dataframe columns
-
+    data_scores = pd.DataFrame(fit.scores_)
+    data_columns = pd.DataFrame(data_features.columns)
+    # Concat two dataframes for better visualization:
+    feature_scores = pd.concat([data_columns, data_scores],axis=1)
+    feature_scores.columns = ['Feature','Score']
+    feature_scores.sort_values(by=['Score'])
 
     # Removing features with low variance:
     #remover = VarianceThreshold(threshold=(.8 * (1 - .8)))
@@ -559,12 +498,15 @@ def main():
     print('> split ratio:\t',ratio,'/',1.0-ratio)
     print('> Testset:\t',features_test.shape)
     print('> Trainingset:\t',features_test.shape)
-    print('> Full imported Dataset:\t',data.shape,'\n')
+    print('> Full imported Dataset: ',data.shape,'\n')
 
 
     # Normalization (L1 & L2):
-    features_test= normalize(features_test, norm='l2') # norm='l1'
-    features_train = normalize(features_train, norm='l2') # norm='l1'
+    # NOTE:  Change 'normtype' value to 'l1' / 'l2' to change normalization type:
+    normtype = 'l2'#'l1'
+    print('> Normalizing datasets with', normtype,':')
+    features_test= normalize(features_test, norm=normtype)
+    features_train = normalize(features_train, norm=normtype)
 
 
 
@@ -573,29 +515,49 @@ def main():
 
     # cls_selection is used for manually enabeling the individual classifiers.
     # NOTE:  setting boolean value, eanbles/disables classifiers
-    cls_selection = {
-    'ETC': (True, 'ExtraTrees'),
-    'RFC': (True, 'RandomForest'),
-    'ABC': (True, 'AdaBoost'),
-    'DCT': (True, 'DecisionTree'),
-    'KNB': (True, 'NearestNeighbors'),
-    'LSV': (True, 'LinearSVC'),
-    'RBF': (True, 'RBF_SVC'),
-    'GPC': (True, 'GaussianProcess'),
-    'MLP': (True, 'NeuralNetwork'),
-    'LRC': (True, 'LogisticRegression'),
-    'QDA': (True, 'QuadraticDiscriminantAnalysis'),
-    'GNB': (True, 'NaiveBayes') }
+    classifiers = {
+        'ExtraTrees': ( True, ExtraTreesClassifier() ),
+        'RandomForest': ( True, RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1) ),
+        'AdaBoost': ( True, AdaBoostClassifier() ),
+        'DecisionTree': ( True, DecisionTreeClassifier(max_depth=5) ),
+        'NearestNeighbors': (True, KNeighborsClassifier(n_neighbors=5) ), # (n_neighbors=4) ),
+        'LinearSVM': ( True, SVC(kernel="linear", C=0.025) ),  # (C=0.01, penalty="l1", dual=False) ),
+        'RBF_SVM': (True, SVC(gamma=2, C=1) ), # (gamma='auto') ),
+        'Nu_SVM': (True, NuSVC() ),
+        'GaussianProcess': (True, GaussianProcessClassifier() ), #(1.0 * RBF(1.0)) ),
+        'NeuralNet': (True, MLPClassifier(alpha=1, max_iter=1000) ),
+        'LogisticRegression': (True, LogisticRegression() ),
+        'QDA': (True, QuadraticDiscriminantAnalysis() ),
+        'LDA': (True, LinearDiscriminantAnalysis() ),
+        'NaiveBayes': (True,  GaussianNB() ),
+        'GradientBoosting': (True, GradientBoostingClassifier() ),
+        'RadiusNeighborsClassifier': (True, RadiusNeighborsClassifier() ),
+        'SGDClassifier': (True, SGDClassifier() ),
+        'RidgeClassifierCV': (True, RidgeClassifierCV() ),
+        'RidgeClassifier': (True, RidgeClassifier() ),
+        'PassiveAggressiveClassifier': (True, PassiveAggressiveClassifier() ),
+        'BaggingClassifier': (True, BaggingClassifier() ),
+        'BernoulliNB': (True, BernoulliNB() ),
+        'CalibratedClassifierCV': (True, CalibratedClassifierCV() ),
+        'LabelPropagation': (True, LabelPropagation() ),
+        'LabelSpreading': (True, LabelSpreading() ),
+        'LinearSVC': (True, LinearSVC() ),
+        'LogisticRegressionCV': (True, LogisticRegressionCV() ),
+        'MultinomialNB': (True, MultinomialNB() ),
+        'NearestCentroid': (True, NearestCentroid() ),
+        'Perceptron': (True, Perceptron() )
+        #'OneClassSVM': (True, OneClassSVM() ),
+        #'ClassifierChain': (True, ClassifierChain() ),
+        #'MultiOutputClassifier': (True, MultiOutputClassifier() ),
+        #'OutputCodeClassifier': (True, OutputCodeClassifier() ),
+        #'OneVsOneClassifier': (True, OneVsOneClassifier() ),
+        #'OneVsRestClassifier': (True, OneVsRestClassifier() ),
+    }
 
 
-    scores, importances = classify(features_test, labels_test, features_train, labels_train, feature_preselection, cls_selection)
+    scores, importances = classify(features_test, labels_test, features_train, labels_train, classifiers, feature_preselection)
 
-    feature_ranking = rank_features(importances)
-
-
-    print('\n============================= CLASSIFIER RANKING =============================\n')
-    cls_ranking = pd.DataFrame.from_dict(scores)
-    print(cls_ranking)
+    importance_ranking = rank_feature_importance(importances)
 
 
     print('\n============================== FEATURE RANKING ==============================\n')
@@ -605,12 +567,17 @@ def main():
 
 
     print('> Features with highest importance with different classifiers:')
-    importance_ranking = pd.DataFrame.from_dict(feature_ranking)
     print(importance_ranking)
 
 
-    print('\n> Univariate automatic feature selection:\n  Applying SelectKBest class to extract top best features:')
-    print(featureScores.nlargest(20,'Score'))  #print n best features
+    print('\n> Univariate automatic feature selection:\nApplying SelectKBest class to extract top best features:')
+    print(feature_scores)
+    #print(feature_scores.round({'Score': 3}))
+    #print(feature_scores.nlargest(20,'Score', ))  #print n best features
+
+
+    print('\n============================= CLASSIFIER RANKING =============================\n')
+    print(scores)
 
     print('\n=============================================================================')
 

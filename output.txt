@@ -1,51 +1,30 @@
-> Importing 25 .csv-files from folder:  Kickstarter_2019-04-18T03_20_02_220Z
+> Importing .csv-files from folder:  Kickstarter_2019-04-18T03_20_02_220Z
  0: Kickstarter.csv
  1: Kickstarter001.csv
- 2: Kickstarter002.csv
- 3: Kickstarter003.csv
- 4: Kickstarter004.csv
- 5: Kickstarter005.csv
- 6: Kickstarter006.csv
- 7: Kickstarter007.csv
- 8: Kickstarter008.csv
- 9: Kickstarter009.csv
- 10: Kickstarter010.csv
- 11: Kickstarter011.csv
- 12: Kickstarter012.csv
- 13: Kickstarter013.csv
- 14: Kickstarter014.csv
- 15: Kickstarter015.csv
- 16: Kickstarter016.csv
- 17: Kickstarter017.csv
- 18: Kickstarter018.csv
- 19: Kickstarter019.csv
- 20: Kickstarter020.csv
- 21: Kickstarter021.csv
- 22: Kickstarter022.csv
- 23: Kickstarter023.csv
- 24: Kickstarter024.csv
+ ...
+ 55: Kickstarter055.csv
 
 ========================= EXPLORATORY DATA ANALYSIS =========================
-> Total number of campaigns:  3786
-	- backers avg.:	 118
-	- pledged avg.:	 10243 $
-	- goal avg.:	 75820 $
-	- staff pick:	 12 %
+> Total number of campaigns:  1765
+	- backers avg.:	 98
+	- pledged avg.:	 7348 $
+	- goal avg.:	 22592 $
+	- staff pick:	 14 %
 	- spotlight:	 59  %
-	- duration avg.: 29 days
+	- duration avg.: 28 days
 
 > successful:   58 %
-	- backers avg.:	 198
-	- pledged avg.:	 17144 $
-	- goal avg.:	 9734 $
-	- staff pick:	 20 %
+	- backers avg.:	 161
+	- pledged avg.:	 12188 $
+	- goal avg.:	 11028 $
+	- staff pick:	 22 %
 	- spotlight:	 100 %
 	- duration avg.: 30 days
 
-> unsuccessful:   34 %
-	- backers avg.:	 12
-	- pledged avg.:	 1062 $
-	- goal avg.:	 208638 $
+> unsuccessful:   32 %
+	- backers avg.:	 14
+	- pledged avg.:	 959 $
+	- goal avg.:	 51027 $
 	- staff pick:	 3 %
 	- spotlight:	 3 %
 	- duration avg.: 34 days
@@ -53,129 +32,129 @@
 ============================ TOP (UN)SUCCESSFUL =============================
 
 > Categories with most successful campaigns:
-film & video    374
-art             324
-music           305
-games           201
-publishing      201
+film & video    234
+food            154
+publishing      137
+crafts          109
+art              63
 Name: cat_name, dtype: int64
 
 > Categories with most unsuccessful campaigns:
-film & video    240
-technology      175
-art             153
-food            144
-games           110
+film & video    125
+art              91
+food             83
+photography      59
+music            39
 Name: cat_name, dtype: int64
 
 > Subcategories with most successful campaigns:
-null              131
-tabletop games    115
-illustration      113
-documentary       100
-comic books        88
+null              113
+shorts            108
+small batch        50
+video games        45
+narrative film     37
 Name: subcat_name, dtype: int64
 
 > Subcategories with most unsuccessful campaigns:
-apps             69
-web              60
-comedy           55
-playing cards    45
-sculpture        42
+small batch    44
+digital art    41
+television     40
+nature         23
+animation      22
 Name: subcat_name, dtype: int64
 
 > Persons with most successful campaigns:
-NightstormWest (deleted)    4
-Jeff Dee                    4
-For Freedoms                3
-Evolutionary Comics         3
-Carrie Benson               3
+Janet Willkomm      3
+Anne Stilper DAC    2
+Amanda              2
+Emilie Evans        2
+Alexis Mantione     2
 Name: person_name, dtype: int64
 
 > Persons with most unsuccessful campaigns:
-Sebastian      3
-Janeé Brown    2
-David          2
-James          2
-Eric           2
+Moreno Koning         2
+Sean                  2
+Mateo Breaux          2
+Nathan Rudloff        1
+Meekaaeel Muhammad    1
 Name: person_name, dtype: int64
 
 > Countries with most successful campaigns:
-US    1568
-GB     281
-CA      91
-AU      43
-FR      31
+US    742
+GB    142
+CA     37
+MX     20
+AU     14
 Name: country, dtype: int64
 
 > Countries with most unsuccessful campaigns:
-US    877
-GB    124
-CA     60
-AU     41
-DE     24
+US    386
+GB     61
+CA     36
+AU     13
+FR     12
 Name: country, dtype: int64
 
 > Locations with most successful campaigns:
-Los Angeles, CA      123
-London, UK            91
-New York, NY          89
-Brooklyn, NY          50
-San Francisco, CA     43
+London, UK         49
+New York, NY       47
+Los Angeles, CA    46
+Brooklyn, NY       33
+Chicago, IL        23
 Name: location_name, dtype: int64
 
 > Locations with most unsuccessful campaigns:
-Los Angeles, CA    60
-New York, NY       39
-London, UK         35
-Chicago, IL        24
-Dallas, TX         16
+Los Angeles, CA    24
+London, UK         19
+New York, NY       17
+Chicago, IL        10
+Atlanta, GA         8
 Name: location_name, dtype: int64
 
 > States with most successful campaigns:
-CA         308
-England    238
-NY         194
-WA          78
-TX          73
+England    123
+CA         122
+NY         114
+TX          43
+IL          31
 Name: location_state, dtype: int64
 
 > States with most unsuccessful campaigns:
-CA         140
-England    110
-NY          87
-TX          63
-FL          52
+CA         69
+England    45
+NY         30
+TX         25
+FL         22
 Name: location_state, dtype: int64
 
 ============================= DATAFRAME HEADER ==============================
 0
-state                                           successful
-id                                              1733362627
-name                        Let's Go! Fundraising Campaign
-backers_count                                           11
-converted_pledged_amount                               686
-goal                                                     3
-country                                                 US
-staff_pick                                           False
-spotlight                                             True
-launched_at                                     1543600648
-deadline                                        1546398000
-cat_id                                                 292
-cat_name                                      film & video
-subcat_name                                         comedy
-pos                                                      3
-parent_id                                               11
-person_id                                       1700426892
-person_name                                       Sam Pfab
-location_id                                        2471390
-location_name                                  Phoenix, AZ
-location_state                                          AZ
-location_type                                         Town
-duration                                                32
-divergence                                             683
-divergence                                             683
-goal_exceeded                                         True
+state                                                                canceled
+id                                                                 1749934502
+name                        HOLLADAY - Contemporary Clothing, Made & Print...
+backers_count                                                               6
+converted_pledged_amount                                                 1847
+goal                                                                     7000
+country                                                                    GB
+staff_pick                                                              False
+spotlight                                                               False
+launched_at                                                        1428417237
+deadline                                                           1431009237
+cat_id                                                                    269
+cat_name                                                              fashion
+subcat_name                                                     ready-to-wear
+pos                                                                         8
+parent_id                                                                   9
+person_id                                                          2097220771
+person_name                                                 Ayesha Collenette
+location_id                                                             44418
+location_name                                                      London, UK
+location_state                                                        England
+location_type                                                            Town
+duration                                                                   30
+divergence                                                              -5153
+divergence                                                              -5153
+goal_exceeded                                                           False
 Name: 0, dtype: object
 
 ============================= FEATURE-SELECTION =============================
@@ -183,90 +162,108 @@ Name: 0, dtype: object
 > Manual Feature-Pre-Selection:
   backers_count,  converted_pledged_amount,  goal,  country,  staff_pick,  launched_at,  deadline,  cat_id,  cat_name,  subcat_name,  pos,  parent_id,  person_id,  person_name,  location_id,  location_name,  location_state,  location_type,  duration,  goal_exceeded,
 
-> Imported Dataset after Feature-Pre-Selection:	 (3457, 20)
+> Imported Dataset after Feature-Pre-Selection:	 (1581, 20)
 
 ============================= DATASET DIVISION ==============================
 
 > split ratio:	 0.3 / 0.7
-> Testset:	 (2419, 20)
-> Trainingset:	 (2419, 20)
-> Full imported Dataset:	 (3786, 26) 
+> Testset:	 (1106, 20)
+> Trainingset:	 (1106, 20)
+> Full imported Dataset:  (1765, 26)
 
-============================== CLASSIFICATION ===============================
-
-
-============================= CLASSIFIER RANKING =============================
-
-                                0         1
-0                      ExtraTrees  0.854899
-1                    DecisionTree  0.785862
-2                        AdaBoost  0.728814
-3                      NaiveBayes  0.651095
-4                       LinearSVC  0.631253
-5                         RBF_SVC  0.631253
-6                 GaussianProcess  0.631253
-7                   NeuralNetwork  0.631253
-8              LogisticRegression  0.631253
-9                    RandomForest  0.630012
-10               NearestNeighbors  0.498967
-11  QuadraticDiscriminantAnalysis  0.368747
+> Normalizing datasets with l2
 
 ============================== FEATURE RANKING ==============================
 
 > Table containing importance of every feature with different classifiers:
 
-              backers_count  converted_pledged_amount      goal  country  staff_pick  launched_at  deadline  cat_id  cat_name  subcat_name       pos  parent_id  person_id  person_name  location_id  location_name  location_state  location_type  duration  goal_exceeded
-ExtraTrees              0.0                  0.000000  0.000000      0.0    0.124329     0.064984  0.072328     0.0  0.069355     0.050495  0.000000   0.121071   0.006789     0.075777     0.053222            0.0        0.000000       0.290580  0.000000        0.07107
-RandomForest            0.0                  0.004857  0.039274      0.0    0.000000     0.000000  0.000000     0.0  0.001814     0.047319  0.304324   0.000000   0.000000     0.000000     0.134634            0.0        0.022625       0.036289  0.408862        0.00000
-AdaBoost                0.0                  0.000000  0.000000      0.0    0.000000     0.240000  0.000000     0.0  0.100000     0.000000  0.200000   0.100000   0.000000     0.000000     0.000000            0.0        0.220000       0.140000  0.000000        0.00000
-DecisionTree            0.0                  0.000000  0.000000      0.0    0.000000     0.000000  0.000000     0.0  0.002080     0.000000  0.031419   0.015310   0.022725     0.000000     0.000000            0.0        0.501501       0.426964  0.000000        0.00000
-Total                   0.0                  0.004857  0.039274      0.0    0.124329     0.304984  0.072328     0.0  0.173249     0.097815  0.535743   0.236381   0.029515     0.075777     0.187856            0.0        0.744126       0.893834  0.408862        0.07107 
+                  backers_count  converted_pledged_amount  goal  country  staff_pick  launched_at  deadline    cat_id  cat_name  subcat_name       pos  parent_id  person_id  person_name  location_id  location_name  location_state  location_type  duration  goal_exceeded
+ExtraTrees             0.079587                       0.0   0.0      0.0         0.0     0.052650   0.00000  0.063784  0.089451     0.068357  0.000000   0.000000   0.094720     0.000000          0.0       0.000000        0.151901       0.243883  0.082678       0.072989
+RandomForest           0.000000                       0.0   0.0      0.0         0.0     0.000000   0.13222  0.000000  0.009034     0.125522  0.157040   0.000000   0.010163     0.010934          0.0       0.000000        0.203469       0.273828  0.077790       0.000000
+AdaBoost               0.000000                       0.0   0.0      0.0         0.0     0.000000   0.00000  0.000000  0.100000     0.000000  0.120000   0.160000   0.320000     0.000000          0.0       0.000000        0.180000       0.120000  0.000000       0.000000
+DecisionTree           0.000000                       0.0   0.0      0.0         0.0     0.000000   0.00000  0.000000  0.000000     0.000000  0.028591   0.042714   0.000000     0.061478          0.0       0.000000        0.453512       0.397719  0.000000       0.015986
+GradientBoosting       0.000000                       0.0   0.0      0.0         0.0     0.000286   0.00000  0.000000  0.047368     0.000000  0.000000   0.000000   0.096612     0.024071          0.0       0.000281        0.377211       0.425617  0.028554       0.000000
+Total                  0.079587                       0.0   0.0      0.0         0.0     0.052936   0.13222  0.063784  0.245853     0.193879  0.305632   0.202714   0.521496     0.096483          0.0       0.000281        1.366093       1.461047  0.189022       0.088976
 
 > Features with highest importance with different classifiers:
-                           0         1
-0              location_type  0.893834
-1             location_state  0.744126
-2                        pos  0.535743
-3                   duration  0.408862
-4                launched_at  0.304984
-5                  parent_id  0.236381
-6                location_id  0.187856
-7                   cat_name  0.173249
-8                 staff_pick  0.124329
-9                subcat_name  0.097815
-10               person_name  0.075777
-11                  deadline  0.072328
-12             goal_exceeded  0.071070
-13                      goal  0.039274
-14                 person_id  0.029515
-15  converted_pledged_amount  0.004857
-16             backers_count  0.000000
-17                   country  0.000000
-18                    cat_id  0.000000
-19             location_name  0.000000
+                     Feature  Importance
+0              location_type    1.461047
+1             location_state    1.366093
+2                  person_id    0.521496
+3                        pos    0.305632
+4                   cat_name    0.245853
+5                  parent_id    0.202714
+6                subcat_name    0.193879
+7                   duration    0.189022
+8                   deadline    0.132220
+9                person_name    0.096483
+10             goal_exceeded    0.088976
+11             backers_count    0.079587
+12                    cat_id    0.063784
+13               launched_at    0.052936
+14             location_name    0.000281
+15  converted_pledged_amount    0.000000
+16                      goal    0.000000
+17                   country    0.000000
+18                staff_pick    0.000000
+19               location_id    0.000000
 
 > Univariate automatic feature selection:
-  Applying SelectKBest class to extract top best features:
+Applying SelectKBest class to extract top best features:
                      Feature         Score
-2                       goal  3.833044e+08
-5                launched_at  5.736578e+07
-6                   deadline  5.338571e+07
-14               location_id  2.830641e+07
-12                 person_id  2.168624e+07
-1   converted_pledged_amount  1.854906e+07
-0              backers_count  2.150453e+05
-7                     cat_id  5.252092e+04
-19             goal_exceeded  1.186796e+03
-13               person_name  4.415338e+02
-18                  duration  4.200601e+02
-11                 parent_id  2.708990e+02
-15             location_name  2.153696e+02
-4                 staff_pick  1.698894e+02
-8                   cat_name  9.149873e+01
-9                subcat_name  2.618057e+01
-3                    country  7.099648e+00
-16            location_state  4.328427e+00
-10                       pos  1.048578e+00
-17             location_type  5.886485e-02
+0              backers_count  7.151301e+04
+1   converted_pledged_amount  5.562694e+06
+2                       goal  2.295970e+07
+3                    country  9.033424e+00
+4                 staff_pick  8.228638e+01
+5                launched_at  6.229028e+07
+6                   deadline  5.961083e+07
+7                     cat_id  8.143942e+03
+8                   cat_name  1.612786e-01
+9                subcat_name  3.195189e+01
+10                       pos  1.781242e+01
+11                 parent_id  1.640472e+00
+12                 person_id  3.989231e+07
+13               person_name  1.694971e+00
+14               location_id  3.369997e+06
+15             location_name  1.549783e+00
+16            location_state  3.806694e-01
+17             location_type  1.407470e+00
+18                  duration  1.675870e+02
+19             goal_exceeded  5.205046e+02
+
+============================= CLASSIFIER RANKING =============================
+
+                     Classifier     Score
+0                   BernoulliNB  0.963834
+1                           LDA  0.960217
+2                           QDA  0.927667
+3             BaggingClassifier  0.924051
+4              GradientBoosting  0.861664
+5                    ExtraTrees  0.830018
+6                  DecisionTree  0.779385
+7                      AdaBoost  0.746835
+8                    NaiveBayes  0.657324
+9                  RandomForest  0.644665
+10                    LinearSVM  0.641049
+11                      RBF_SVM  0.641049
+12              GaussianProcess  0.641049
+13                    NeuralNet  0.641049
+14           LogisticRegression  0.641049
+15    RadiusNeighborsClassifier  0.641049
+16                SGDClassifier  0.641049
+17            RidgeClassifierCV  0.641049
+18              RidgeClassifier  0.641049
+19  PassiveAggressiveClassifier  0.641049
+20       CalibratedClassifierCV  0.641049
+21             LabelPropagation  0.641049
+22               LabelSpreading  0.641049
+23                    LinearSVC  0.641049
+24         LogisticRegressionCV  0.641049
+25                MultinomialNB  0.641049
+26             NearestNeighbors  0.587703
+27                       Nu_SVM  0.573237
+28              NearestCentroid  0.499096
+29                   Perceptron  0.358951
 
 =============================================================================
