@@ -3,8 +3,8 @@
 #
 # SFIR assignement: predicting campaign success on kickstarter using ML
 # @author:   Julius Steidl
-# date:     22.07.2019
-# version:  1.5
+# date:     23.07.2019
+# version:  1.6
 # NOTE:     folder with .csv files is required:  ./Kickstarter_2019-07-18T03_20_05_009Z/
 #           source:  https://s3.amazonaws.com/weruns/forfun/Kickstarter/Kickstarter_2019-07-18T03_20_05_009Z.zip
 
@@ -15,6 +15,7 @@ from Preprocessing import Preprocessing
 from Estimate import Estimate
 
 import sys
+import os
 import pandas as pd
 import numpy as np
 import ast
@@ -121,7 +122,7 @@ def main():
         data = pd.read_pickle('./'+path+'.pickle')
     else:
         datasetImport = DatasetImport(path)
-        data = datasetImport.data
+        data = datasetImport.all_data
         data.to_pickle(path+'.pickle')
 
 
@@ -158,8 +159,8 @@ def main():
     # a) Manual Feature-Pre-Selection:
 
     # NOTE:  manually add/remove features in following line forfeature-selection:
-    feature_preselection = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'goal_exceeded']#, 'divergence'] #'spotlight'
-    # features = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence', 'goal_exceeded']
+    feature_preselection = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration_days', 'goal_exceeded']#, 'divergence'] #'spotlight'
+    # features = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration_days', 'divergence', 'goal_exceeded']
 
     X = data_encoded[feature_preselection]
     y = data_encoded['state']
@@ -247,7 +248,7 @@ def main():
         'LogisticRegressionCV': (True, LogisticRegressionCV() ),
         'MultinomialNB': (True, MultinomialNB() ),
         'NearestCentroid': (True, NearestCentroid() ),
-        'Perceptron': (True, Perceptron() )
+        'Perceptron': (True, Perceptron() ),
         #'OneClassSVM': (True, OneClassSVM() ),
         #'ClassifierChain': (True, ClassifierChain() ),
         #'MultiOutputClassifier': (True, MultiOutputClassifier() ),

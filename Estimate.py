@@ -10,6 +10,7 @@ import numpy as np
 
 from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import mean_squared_error
+from sklearn import model_selection
 
 from sklearn.tree import ExtraTreeClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -78,6 +79,9 @@ class Estimate:
                 model.fit(X_train, y_train)
 
                 # a) Evaluation of the model:
+                '''MAE is the average of the absolute difference between the predicted values and observed value.
+                The MAE is a linear score which means that all the individual differences are weighted equally in the average.
+                For example, the difference between 10 and 0 will be twice the difference between 5 and 0.'''
                 try:
                     # Get the predictions of the model fro the data it has not seen (testing):
                     y_pred_test = model.predict(X_test)
@@ -98,6 +102,13 @@ class Estimate:
                 score = model.score(X_test, y_test)
 
                 scores[model_name] = score
+
+                # Cross Validation Classification Accuracy:
+                #seed = 7
+                #kfold = model_selection.KFold(n_splits=10, random_state=seed)
+                #scoring = 'accuracy'
+                #results = model_selection.cross_val_score(model, X, Y, cv=kfold, scoring=scoring)
+                #print("Accuracy: %.3f (%.3f)") % (results.mean(), results.std())
 
 
                 # c) get feature importances:

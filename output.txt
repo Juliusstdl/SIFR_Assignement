@@ -11,7 +11,7 @@
 	- goal avg.:	 19646 $
 	- staff pick:	 15 %
 	- spotlight:	 65  %
-	- duration avg.: 29 days
+	- duration_days avg.: 29 days
 
 > successful:   63 %
 	- backers avg.:	 224
@@ -19,7 +19,7 @@
 	- goal avg.:	 11762 $
 	- staff pick:	 22 %
 	- spotlight:	 100 %
-	- duration avg.: 31 days
+	- duration_days avg.: 31 days
 
 > unsuccessful:   29 %
 	- backers avg.:	 14
@@ -27,7 +27,7 @@
 	- goal avg.:	 41997 $
 	- staff pick:	 5 %
 	- spotlight:	 5 %
-	- duration avg.: 34 days
+	- duration_days avg.: 34 days
 
 ============================ TOP (UN)SUCCESSFUL =============================
 
@@ -52,31 +52,31 @@ children's books    88
 documentary         83
 shorts              75
 narrative film      68
-null                44
+illustration        42
 Name: subcat_name, dtype: int64
 
 > Subcategories with most unsuccessful campaigns:
-small batch    37
-jewelry        29
-people         27
-thrillers      21
-faith          18
+small batch     37
+jewelry         29
+people          27
+thrillers       21
+architecture    18
 Name: subcat_name, dtype: int64
 
 > Persons with most successful campaigns:
-Michele Hartsoe     2
 Nicola Box          2
+Michele Hartsoe     2
 Jackson Robinson    2
 David               2
-Jade Harris         1
+Artis Opus          1
 Name: person_name, dtype: int64
 
 > Persons with most unsuccessful campaigns:
-Yuki                2
-James Williamson    1
-Cansler McGhee      1
-Michael Speight     1
-Matt Dunn           1
+Yuki                                         2
+Yahchanan                                    1
+Kelly James Backert                          1
+Handan Productions                           1
+Justin and Ivy- drinbar juicery (deleted)    1
 Name: person_name, dtype: int64
 
 > Countries with most successful campaigns:
@@ -106,9 +106,9 @@ Name: location_name, dtype: int64
 > Locations with most unsuccessful campaigns:
 Los Angeles, CA    13
 New York, NY        9
-Baltimore, MD       6
 London, UK          6
-Seattle, WA         5
+Baltimore, MD       6
+Portland, OR        5
 Name: location_name, dtype: int64
 
 > States with most successful campaigns:
@@ -134,7 +134,7 @@ Name: location_state, dtype: int64
 	- goal avg.:	 19646 $
 	- staff pick:	 15 %
 	- spotlight:	 65  %
-	- duration avg.: 29 days
+	- duration_days avg.: 29 days
 
 > successful:   63 %
 	- backers avg.:	 224
@@ -142,7 +142,7 @@ Name: location_state, dtype: int64
 	- goal avg.:	 11762 $
 	- staff pick:	 22 %
 	- spotlight:	 100 %
-	- duration avg.: 31 days
+	- duration_days avg.: 31 days
 
 > unsuccessful:   29 %
 	- backers avg.:	 14
@@ -150,7 +150,7 @@ Name: location_state, dtype: int64
 	- goal avg.:	 41997 $
 	- staff pick:	 5 %
 	- spotlight:	 5 %
-	- duration avg.: 34 days
+	- duration_days avg.: 34 days
 
 ============================ TOP (UN)SUCCESSFUL =============================
 
@@ -175,31 +175,31 @@ children's books    88
 documentary         83
 shorts              75
 narrative film      68
-null                44
+illustration        42
 Name: subcat_name, dtype: int64
 
 > Subcategories with most unsuccessful campaigns:
-small batch    37
-jewelry        29
-people         27
-thrillers      21
-faith          18
+small batch     37
+jewelry         29
+people          27
+thrillers       21
+architecture    18
 Name: subcat_name, dtype: int64
 
 > Persons with most successful campaigns:
-Michele Hartsoe     2
 Nicola Box          2
+Michele Hartsoe     2
 Jackson Robinson    2
 David               2
-Jade Harris         1
+Artis Opus          1
 Name: person_name, dtype: int64
 
 > Persons with most unsuccessful campaigns:
-Yuki                2
-James Williamson    1
-Cansler McGhee      1
-Michael Speight     1
-Matt Dunn           1
+Yuki                                         2
+Yahchanan                                    1
+Kelly James Backert                          1
+Handan Productions                           1
+Justin and Ivy- drinbar juicery (deleted)    1
 Name: person_name, dtype: int64
 
 > Countries with most successful campaigns:
@@ -229,9 +229,9 @@ Name: location_name, dtype: int64
 > Locations with most unsuccessful campaigns:
 Los Angeles, CA    13
 New York, NY        9
-Baltimore, MD       6
 London, UK          6
-Seattle, WA         5
+Baltimore, MD       6
+Portland, OR        5
 Name: location_name, dtype: int64
 
 > States with most successful campaigns:
@@ -270,12 +270,11 @@ pos                                                              2
 parent_id                                                        7
 person_id                                               2087203732
 person_name                                            Eugene Kang
-location_id                                                2442047
+location_id                                            2.44205e+06
 location_name                                      Los Angeles, CA
 location_state                                                  CA
 location_type                                                 Town
-duration                                                        30
-divergence                                                  -99999
+duration_days                                                   30
 divergence                                                  -99999
 goal_exceeded                                                False
 Name: 0, dtype: object
@@ -283,7 +282,7 @@ Name: 0, dtype: object
 ============================= FEATURE-SELECTION =============================
 
 > Manual Feature-Pre-Selection:
-  backers_count,  converted_pledged_amount,  goal,  country,  staff_pick,  launched_at,  deadline,  cat_id,  cat_name,  subcat_name,  pos,  parent_id,  person_id,  person_name,  location_id,  location_name,  location_state,  location_type,  duration,  goal_exceeded,
+  backers_count,  converted_pledged_amount,  goal,  country,  staff_pick,  launched_at,  deadline,  cat_id,  cat_name,  subcat_name,  pos,  parent_id,  person_id,  person_name,  location_id,  location_name,  location_state,  location_type,  duration_days,  goal_exceeded,
 
 > Imported Dataset after Feature-Pre-Selection:	 (1167, 20)
 
@@ -292,7 +291,7 @@ Name: 0, dtype: object
 > split ratio:	 0.3 / 0.7
 > Testset:	 (351, 20)
 > Trainingset:	 (816, 20)
-> Full useable / imported Dataset: (1167, 26) / (1265, 26)
+> Full useable / imported Dataset: (1167, 25) / (1265, 25)
 
 > Normalizing datasets with  l2
 
@@ -301,36 +300,36 @@ Name: 0, dtype: object
 
 > Table containing importance of every feature with different classifiers:
 
-                  backers_count  converted_pledged_amount  goal  country  staff_pick  launched_at  deadline  cat_id  cat_name  subcat_name       pos  parent_id  person_id  person_name  location_id  location_name  location_state  location_type  duration  goal_exceeded
-ExtraTrees                  0.0                       0.0   0.0      0.0         0.0     0.036515  0.078775     0.0  0.073028     0.046090  0.000000   0.000000   0.053412     0.068494          0.0       0.000000        0.104734       0.194491  0.073129       0.271332
-RandomForest                0.0                       0.0   0.0      0.0         0.0     0.000000  0.243520     0.0  0.000000     0.072513  0.061762   0.000000   0.004906     0.048033          0.0       0.000000        0.162049       0.351699  0.055518       0.000000
-AdaBoost                    0.0                       0.0   0.0      0.0         0.0     0.240000  0.000000     0.0  0.120000     0.000000  0.160000   0.120000   0.000000     0.000000          0.0       0.000000        0.220000       0.140000  0.000000       0.000000
-DecisionTree                0.0                       0.0   0.0      0.0         0.0     0.000000  0.000000     0.0  0.008710     0.000000  0.071475   0.012821   0.136534     0.000000          0.0       0.000000        0.429536       0.340924  0.000000       0.000000
-GradientBoosting            0.0                       0.0   0.0      0.0         0.0     0.102407  0.000000     0.0  0.039959     0.000461  0.000000   0.000000   0.000703     0.028059          0.0       0.000648        0.380239       0.423515  0.024010       0.000000
-Total                       0.0                       0.0   0.0      0.0         0.0     0.378922  0.322295     0.0  0.241697     0.119064  0.293237   0.132821   0.195556     0.144586          0.0       0.000648        1.296558       1.450628  0.152658       0.271332
+                  backers_count  converted_pledged_amount      goal  country  staff_pick  launched_at  deadline    cat_id  cat_name  subcat_name       pos  parent_id  person_id  person_name  location_id  location_name  location_state  location_type  duration_days  goal_exceeded
+ExtraTrees                  0.0                       0.0  0.000000      0.0         0.0     0.040243  0.071852  0.000000  0.054523     0.078493  0.000000   0.000000   0.072545      0.00000     0.031597            0.0        0.098880       0.205241       0.061101       0.285525
+RandomForest                0.0                       0.0  0.141075      0.0         0.0     0.000000  0.000000  0.194312  0.000000     0.105522  0.175337   0.052782   0.000000      0.00000     0.000000            0.0        0.102674       0.222719       0.005578       0.000000
+AdaBoost                    0.0                       0.0  0.000000      0.0         0.0     0.000000  0.000000  0.000000  0.060000     0.000000  0.160000   0.140000   0.300000      0.00000     0.000000            0.0        0.160000       0.180000       0.000000       0.000000
+DecisionTree                0.0                       0.0  0.000000      0.0         0.0     0.000000  0.000000  0.000000  0.000000     0.000000  0.000000   0.003839   0.023492      0.00000     0.000000            0.0        0.450867       0.421789       0.000000       0.100013
+GradientBoosting            0.0                       0.0  0.000000      0.0         0.0     0.094219  0.000000  0.000323  0.007847     0.000000  0.029589   0.000000   0.000000      0.04615     0.000000            0.0        0.357937       0.427891       0.036043       0.000000
+Total                       0.0                       0.0  0.141075      0.0         0.0     0.134462  0.071852  0.194635  0.122370     0.184015  0.364926   0.196621   0.396037      0.04615     0.031597            0.0        1.170358       1.457641       0.102722       0.385538
 
 > Features with highest importance with different classifiers:
                      Feature  Importance
-0              location_type    1.450628
-1             location_state    1.296558
-2                launched_at    0.378922
-3                   deadline    0.322295
-4                        pos    0.293237
-5              goal_exceeded    0.271332
-6                   cat_name    0.241697
-7                  person_id    0.195556
-8                   duration    0.152658
-9                person_name    0.144586
-10                 parent_id    0.132821
-11               subcat_name    0.119064
-12             location_name    0.000648
-13             backers_count    0.000000
-14  converted_pledged_amount    0.000000
-15                      goal    0.000000
-16                   country    0.000000
-17                staff_pick    0.000000
-18                    cat_id    0.000000
-19               location_id    0.000000
+0              location_type    1.457641
+1             location_state    1.170358
+2                  person_id    0.396037
+3              goal_exceeded    0.385538
+4                        pos    0.364926
+5                  parent_id    0.196621
+6                     cat_id    0.194635
+7                subcat_name    0.184015
+8                       goal    0.141075
+9                launched_at    0.134462
+10                  cat_name    0.122370
+11             duration_days    0.102722
+12                  deadline    0.071852
+13               person_name    0.046150
+14               location_id    0.031597
+15             backers_count    0.000000
+16  converted_pledged_amount    0.000000
+17                   country    0.000000
+18                staff_pick    0.000000
+19             location_name    0.000000
 
 > Univariate automatic feature selection:
 Applying SelectKBest class to extract top best features:
@@ -344,50 +343,50 @@ Applying SelectKBest class to extract top best features:
 6                   deadline  1.301215e+06
 7                     cat_id  3.719400e+04
 8                   cat_name  6.310418e+00
-9                subcat_name  1.633877e+02
+9                subcat_name  2.954550e+02
 10                       pos  2.285639e-01
 11                 parent_id  5.554002e+01
 12                 person_id  1.155486e+08
 13               person_name  4.514439e+02
 14               location_id  6.411254e+06
-15             location_name  7.733295e+00
-16            location_state  1.095272e+01
-17             location_type  3.453555e-01
-18                  duration  5.619165e+01
+15             location_name  9.344435e+00
+16            location_state  1.282515e+01
+17             location_type  4.582508e-01
+18             duration_days  5.619165e+01
 19             goal_exceeded  3.431289e+02
 
 ========================== PREDICTION MODEL RANKING ==========================
 
                           Model  SquareError     Score
-0                   BernoulliNB     0.045584  0.954416
-1                           LDA     0.048433  0.951567
-2             BaggingClassifier     0.074074  0.925926
-3                    ExtraTrees     0.153846  0.846154
-4              GradientBoosting     0.196581  0.803419
-5                  DecisionTree     0.236467  0.763533
-6                      AdaBoost     0.256410  0.743590
+0                           LDA     0.056980  0.943020
+1                   BernoulliNB     0.056980  0.943020
+2             BaggingClassifier     0.105413  0.894587
+3                    ExtraTrees     0.150997  0.849003
+4              GradientBoosting     0.185185  0.814815
+5                  DecisionTree     0.222222  0.777778
+6                      AdaBoost     0.299145  0.700855
 7                  RandomForest     0.313390  0.686610
-8                     LinearSVM     0.327635  0.672365
-9                       RBF_SVM     0.327635  0.672365
-10              GaussianProcess     0.327635  0.672365
-11                    NeuralNet     0.327635  0.672365
-12           LogisticRegression     0.327635  0.672365
-13    RadiusNeighborsClassifier     0.327635  0.672365
-14                SGDClassifier     0.327635  0.672365
-15            RidgeClassifierCV     0.327635  0.672365
-16              RidgeClassifier     0.327635  0.672365
-17  PassiveAggressiveClassifier     0.327635  0.672365
-18       CalibratedClassifierCV     0.327635  0.672365
-19             LabelPropagation     0.327635  0.672365
-20               LabelSpreading     0.327635  0.672365
-21                    LinearSVC     0.327635  0.672365
-22                MultinomialNB     0.327635  0.672365
-23                   Perceptron     0.327635  0.672365
-24                   NaiveBayes     0.336182  0.663818
-25         LogisticRegressionCV     0.341880  0.658120
-26             NearestNeighbors     0.390313  0.609687
-27              NearestCentroid     0.504274  0.495726
-28                       Nu_SVM     0.575499  0.424501
-29                          QDA     0.672365  0.327635
+8                     LinearSVM     0.313390  0.686610
+9                       RBF_SVM     0.313390  0.686610
+10              GaussianProcess     0.313390  0.686610
+11                    NeuralNet     0.313390  0.686610
+12           LogisticRegression     0.313390  0.686610
+13    RadiusNeighborsClassifier     0.313390  0.686610
+14                SGDClassifier     0.313390  0.686610
+15            RidgeClassifierCV     0.313390  0.686610
+16              RidgeClassifier     0.313390  0.686610
+17  PassiveAggressiveClassifier     0.313390  0.686610
+18       CalibratedClassifierCV     0.313390  0.686610
+19             LabelPropagation     0.313390  0.686610
+20               LabelSpreading     0.313390  0.686610
+21                    LinearSVC     0.313390  0.686610
+22                MultinomialNB     0.313390  0.686610
+23                   NaiveBayes     0.319088  0.680912
+24         LogisticRegressionCV     0.321937  0.678063
+25             NearestNeighbors     0.404558  0.595442
+26              NearestCentroid     0.515670  0.484330
+27                       Nu_SVM     0.618234  0.381766
+28                          QDA     0.686610  0.313390
+29                   Perceptron     0.686610  0.313390
 
 =============================================================================
