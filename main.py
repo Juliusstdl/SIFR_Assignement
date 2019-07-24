@@ -4,7 +4,7 @@
 # SFIR assignement: predicting campaign success on kickstarter using ML
 # @author:   Julius Steidl
 # date:     23.07.2019
-# version:  1.6
+# version:  1.7
 # NOTE:     folder with .csv files is required:  ./Kickstarter_2019-07-18T03_20_05_009Z/
 #           source:  https://s3.amazonaws.com/weruns/forfun/Kickstarter/Kickstarter_2019-07-18T03_20_05_009Z.zip
 
@@ -81,6 +81,29 @@ from sklearn.svm import SVC
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
+def handle_arguments(argv):
+    skipimport = False; skipstats = False; slice_value = 1.0
+
+    if len(argv[1:]) > 1:
+    	for arg in argv:
+    		if re.match('^\d\.\d+?$', arg) is not None:
+    			print('numeric')
+    			if float(arg) < 1.0 and float(arg) > 0.0:
+    				slice_value = float(arg)
+    				print('>>> Entered slice value:',slice_value)
+    			else:
+    				print('>>> Please enter a float value between 0.0 and 1.0 to determine the slice of the imported dataset beeing used >>>\n')
+    		# Skipping new dataset import and statistics generation:
+    		if arg in ['-skipall', 'skipall', '-skip', 'skip']:
+    			skipimport = True; skipstats = True
+    		elif arg in ['-skipimport', 'skipimport']:
+    			skipimport = True
+    		elif arg in ['-skipstats', 'skipstats', '-skipstatistics', 'skipstatistics']:
+    			skipstats = True
+
+    return (skipimport, skipstats, slice_value)
+
+
 def rank_feature_importance(importances):
     importances.loc['Total',:]= importances.sum(axis=0)
 
@@ -99,21 +122,11 @@ def rank_feature_importance(importances):
 
 
 def main():
+    # Handling user arguments, if existing:
+    skipimport, skipstats, slice_value = handle_arguments(sys.argv)
+
 
     # I. Importing Dataset & Data Cleaning:
-
-    # Skipping new dataset import and statistics generation:
-    skipimport = False; skipstats = False
-
-    if len(sys.argv) > 1:
-        for arg in sys.argv[1:]:
-            if arg in ['-skipall', 'skipall', '-skip', 'skip']:
-                skipimport = True; skipstats = True
-            elif arg in ['-skipimport', 'skipimport']:
-                skipimport = True
-            elif arg in ['-skipstats', 'skipstats', '-skipstatistics', 'skipstatistics']:
-                skipstats = True
-
 
     path = 'Kickstarter_2019-07-18T03_20_05_009Z'  # date: 2019-07-18
 
@@ -134,7 +147,6 @@ def main():
     if not skipstats:
         statistics = Statistics(data)
         statistics.generate_statistics(data)
-
 
     # Printing dataframe header (= all imported features & labels):
     print('\n============================= DATAFRAME HEADER ==============================')
@@ -169,8 +181,6 @@ def main():
     print('> Manual Feature-Pre-Selection:')
     for feature in feature_preselection:
         print(' ',feature, end=',')
-    print('\n\n> Imported Dataset after Feature-Pre-Selection:\t',X.shape)
-
 
     # b) Automatic Feature-Selection:
 
@@ -193,16 +203,29 @@ def main():
     #print(X.iloc[0]) # =header
 
 
-    # V. Data division into Training and Test datasets & Normalization:
-    ratio = 0.3
+    # Using the user argument value to set the set the slice of the imported dataset beeing used:
+    rows, cols = data_filtered.shape
+    if slice_value < 1.0:
+        slice = int(round(float(rows) * slice_value))
+        X = X.head(slice)
+        y = y.head(slice)
 
+
+
+    # V. Data division into Training and Test datasets & Normalization:
+
+    # Dividing dataset into Training and Test datasets according to predifined ratio:
+    ratio = 0.3
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=ratio)
 
-    print('\n============================= DATASET DIVISION ==============================\n')
-    print('> split ratio:\t',ratio,'/',1.0-ratio)
+    print('\n\n=============================== DATASET SIZE ================================\n')
+    print('> Full useable / imported dataset: ',data_filtered.shape,' / ',data.shape)
+    if slice_value < 1.0:
+        print('> Used dataset slice: ',X.shape,' = ',slice_value*100.0,'%   (as defined by user argument)')
     print('> Testset:\t',X_test.shape)
     print('> Trainingset:\t',X_train.shape)
-    print('> Full useable / imported Dataset:',data_filtered.shape,'/',data.shape,'\n')
+    print('> Split ratio:  ',ratio,'/',1.0-ratio)
+    print('\n=============================================================================\n')
 
 
     # Normalization (L1 & L2):
@@ -279,7 +302,7 @@ def main():
 
 
     print('\n========================== PREDICTION MODEL RANKING ==========================\n')
-    print(results_df)
+    print(results_df.to_string())
 
     print('\n=============================================================================')
 

@@ -5,6 +5,9 @@
 # Encoding string-value columns to logical datatypes (binary & ordinal) for estimation.
 
 
+import pandas as pd
+import numpy as np
+
 from sklearn.preprocessing import normalize
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
@@ -20,11 +23,13 @@ class Preprocessing:
     def feature_encoding(self, data):
         labelencoder = LabelEncoder()
 
-        # data = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration', 'divergence', 'goal_exceeded']
-
-        # Converting string values from 'state'-column into binary integers (0 / 1):
+        # Converting string values from 'state'-column into boolean values:
         bool_dict = {'successful': True,'failed': False}
         data['state'] = data['state'].map(bool_dict)
+
+        # Fill string fields containing NaN dummy-value with 'NaN' string required for labelencoder:
+        values = {'subcat_name': 'NaN', 'location_name': 'NaN', 'location_state': 'NaN', 'location_type': 'NaN'}
+        data = data.fillna(value=values)
 
         data['country'] = labelencoder.fit_transform(data['country'])
         data['cat_name'] = labelencoder.fit_transform(data['cat_name'])
@@ -33,23 +38,9 @@ class Preprocessing:
         data['location_name'] = labelencoder.fit_transform(data['location_name'])
         data['location_state'] = labelencoder.fit_transform(data['location_state'])
         data['location_type'] = labelencoder.fit_transform(data['location_type'])
-        #data['duration'] = labelencoder.fit_transform(data['duration'])
+        #data['duration_days'] = labelencoder.fit_transform(data['duration_days'])
 
-        #categories = labelencoder.categories_
-
-
-        # Encoding (Ordinal Encoder & One Hot Encoder):
-        #ordinalencoder = preprocessing.OrdinalEncoder()
-        #onehotencoder = preprocessing.OneHotEncoder()
-        #encoder.fit(data)
-        #encoder.transform([['foo','bar']])
-        #encoder.transform([['foo','bar'],['baz','quux']]).toarray()
-
-        #encoder = preprocessing.OneHotEncoder(categories=[categories, locations])
-
-        # One Hot Encoding features:
-        #data_dummies = pd.get_dummies(data)
-        #print(list(data.columns))
-        #print(list(data_dummies.columns))
+        # Fill numeric fields containing NaN dummy-value with 0 as value required for fiting model:
+        data = data.fillna(0)
 
         return data

@@ -30,8 +30,8 @@ class Statistics:
         pick_unsuccess = unsuccessful['staff_pick'].sum()
         spot_success = successful['spotlight'].sum()
         spot_unsuccess = unsuccessful['staff_pick'].sum()
-        duration_success = successful['duration'].sum()
-        duration_unsuccess = unsuccessful['duration'].sum()
+        duration_days_success = successful['duration_days'].sum()
+        duration_days_unsuccess = unsuccessful['duration_days'].sum()
 
         print('\n========================= EXPLORATORY DATA ANALYSIS =========================')
 
@@ -41,7 +41,7 @@ class Statistics:
         print('\t- goal avg.:\t',round(float((goal_success+goal_unsuccess)/float(campaign_count))),'$')
         print('\t- staff pick:\t',round(100 * float(pick_success+pick_unsuccess)/float(campaign_count)),'%')
         print('\t- spotlight:\t',round(100 * float(spot_success+spot_unsuccess)/float(campaign_count)),' %')
-        print('\t- duration avg.:',round(float((duration_success+duration_unsuccess)/float(campaign_count))),'days')
+        print('\t- duration_days avg.:',round(float((duration_days_success+duration_days_unsuccess)/float(campaign_count))),'days')
 
         print('\n> successful:  ',round(100 * float(success_count)/float(campaign_count)),'%')
         print('\t- backers avg.:\t',round(float(backers_success/float(success_count))))
@@ -49,7 +49,7 @@ class Statistics:
         print('\t- goal avg.:\t',round(float(goal_success/float(success_count))),'$')
         print('\t- staff pick:\t',round(100 * float(pick_success)/float(success_count)),'%')
         print('\t- spotlight:\t',round(100 * float(spot_success)/float(success_count)),'%')
-        print('\t- duration avg.:',round(float((duration_success)/float(success_count))),'days')
+        print('\t- duration_days avg.:',round(float((duration_days_success)/float(success_count))),'days')
 
         print('\n> unsuccessful:  ',round(100 * float(unsuccess_count)/float(campaign_count)),'%')
         print('\t- backers avg.:\t',round(float(backers_unsuccess/float(unsuccess_count))))
@@ -57,7 +57,7 @@ class Statistics:
         print('\t- goal avg.:\t',round(float(goal_unsuccess/float(unsuccess_count))),'$')
         print('\t- staff pick:\t',round(100 * float(pick_unsuccess)/float(unsuccess_count)),'%')
         print('\t- spotlight:\t',round(100 * float(spot_unsuccess)/float(unsuccess_count)),'%')
-        print('\t- duration avg.:',round(float((duration_unsuccess)/float(unsuccess_count))),'days')
+        print('\t- duration_days avg.:',round(float((duration_days_unsuccess)/float(unsuccess_count))),'days')
 
         print('\n============================ TOP (UN)SUCCESSFUL =============================')
 

@@ -9,8 +9,6 @@ import pandas as pd
 import numpy as np
 
 from sklearn.feature_selection import SelectFromModel
-from sklearn.metrics import mean_squared_error
-from sklearn import model_selection
 
 from sklearn.tree import ExtraTreeClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -55,6 +53,14 @@ from sklearn.svm import SVC
 #from sklearn.mixture import GaussianMixture
 #from sklearn.mixture import VBGMM
 
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import cross_val_score
+from sklearn import model_selection
+
 
 class Estimate:
 
@@ -70,38 +76,42 @@ class Estimate:
 
     def estimate(self, model_selection, X_test, y_test, X_train, y_train, feature_selection):
 
-        scores = {}; errors = {}
+        results_df = pd.DataFrame(columns=['Model', 'Accuracy', 'F1-Score', 'Precision', 'Recall', 'MSE'])#, 'Score'])
         importances_df = pd.DataFrame(columns=feature_selection)
 
         for model_name, tupel in model_selection.items():
             active, model = tupel
             if active:
+
                 model.fit(X_train, y_train)
 
-                # a) Evaluation of the model:
-                '''MAE is the average of the absolute difference between the predicted values and observed value.
-                The MAE is a linear score which means that all the individual differences are weighted equally in the average.
-                For example, the difference between 10 and 0 will be twice the difference between 5 and 0.'''
-                try:
-                    # Get the predictions of the model fro the data it has not seen (testing):
-                    y_pred_test = model.predict(X_test)
-
-                    # All the metrics compare in some way how close are the predicted vs. the actual values:
-                    error_metric = mean_squared_error(y_pred=y_pred_test.astype(np.float64), y_true=y_test.astype(np.float64))
-
-                    errors[model_name] = error_metric
-
-                    #print('> The Mean Square Error of the',model_name,'-model is: ',error_metric,'\n')
-
-                except:
-                    print('Prediction error with using',model_name,'as model.\n')
-                    continue
+                # a) Get the predictions of the model from the data it has not seen (testing):
+                y_pred_test = model.predict(X_test)
 
 
-                # b) Get scores of Classification:
-                score = model.score(X_test, y_test)
+                # b) Evaluation of the model:
+                accuracy = accuracy_score(y_true=y_test, y_pred=y_pred_test)#, normalize=True, sample_weight=None)
 
-                scores[model_name] = score
+                precision = precision_score(y_true=y_test, y_pred=y_pred_test)#, labels=None, pos_label=1, average=’binary’, sample_weight=None)
+
+                recall = recall_score(y_true=y_test, y_pred=y_pred_test)#, labels=None, pos_label=1, average=’binary’, sample_weight=None)
+
+                f1 = f1_score(y_true=y_test, y_pred=y_pred_test)#, labels=None, pos_label=1, average=’binary’, sample_weight=None)
+
+                mse = mean_squared_error(y_true=y_test.astype(np.float64), y_pred=y_pred_test.astype(np.float64))#y_pred=y_pred_test.astype(np.float64), y_true=y_test.astype(np.float64))
+
+                #crossval = cross_val_score()
+
+                #score = model.score(X_test, y_test)
+                #score = model.score(y_true=y_test, y_pred=y_pred_test)
+
+
+                results_df = results_df.append( { 'Model': model_name, 'Accuracy': accuracy, 'F1-Score': f1, 'Precision': precision, 'Recall': recall, 'MSE': mse}, ignore_index=True )#, 'Score': score
+
+                '''
+                # All the metrics compare in some way how close are the predicted vs. the actual values:
+                error_metric = mean_squared_error(y_pred=y_pred_test.astype(np.float64), y_true=y_test.astype(np.float64))
+                #print('> The Mean Square Error of the',model_name,'-model is: ',error_metric,'\n')
 
                 # Cross Validation Classification Accuracy:
                 #seed = 7
@@ -109,9 +119,9 @@ class Estimate:
                 #scoring = 'accuracy'
                 #results = model_selection.cross_val_score(model, X, Y, cv=kfold, scoring=scoring)
                 #print("Accuracy: %.3f (%.3f)") % (results.mean(), results.std())
+                '''
 
-
-                # c) get feature importances:
+                # c) Get feature importances:
                 try:
                     feature_importances = model.feature_importances_
                     importances = {}
@@ -132,16 +142,6 @@ class Estimate:
             #X_train_new = model.transform(X_train)
 
 
-        # Sorting error & score values and saving them in Dataframe:
-        errors = sorted(errors.items(), key=operator.itemgetter(1))
-        errors_df = pd.DataFrame.from_dict(errors)
-        errors_df.columns = ['Model','SquareError']
-
-        scores = sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
-        scores_df = pd.DataFrame.from_dict(scores)
-        scores_df.columns = ['Model','Score']
-
-        results_df = pd.merge(errors_df, scores_df, on='Model')
-        results_df.sort_values(by=['SquareError'])
+        results_df = results_df.sort_values('Accuracy', ascending=False) #(by=['Accuracy'])
 
         return (results_df, importances_df)
