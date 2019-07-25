@@ -74,18 +74,20 @@ class Estimate:
         self.results = self.estimate(model_selection, X_test, y_test, X_train, y_train, feature_preselection)
 
 
-    def estimate(self, model_selection, X_test, y_test, X_train, y_train, feature_selection):
+    def estimate(self, model_selection, X_test, y_test, X_train, y_train, feature_subset):
 
         results_df = pd.DataFrame(columns=['Model', 'Accuracy', 'F1-Score', 'Precision', 'Recall', 'MSE'])#, 'Score'])
-        importances_df = pd.DataFrame(columns=feature_selection)
+        importances_df = pd.DataFrame(columns=feature_subset)
 
         for model_name, tupel in model_selection.items():
             active, model = tupel
             if active:
+                print('>',model_name,': Fitting... ', end = '')
 
                 model.fit(X_train, y_train)
 
                 # a) Get the predictions of the model from the data it has not seen (testing):
+                print('Predicting...')
                 y_pred_test = model.predict(X_test)
 
 
@@ -105,8 +107,11 @@ class Estimate:
                 #score = model.score(X_test, y_test)
                 #score = model.score(y_true=y_test, y_pred=y_pred_test)
 
+                results = { 'Model': model_name, 'Accuracy': accuracy, 'F1-Score': f1, 'Precision': precision, 'Recall': recall, 'MSE': mse }
 
-                results_df = results_df.append( { 'Model': model_name, 'Accuracy': accuracy, 'F1-Score': f1, 'Precision': precision, 'Recall': recall, 'MSE': mse}, ignore_index=True )#, 'Score': score
+                print('\t',results,'\n')
+
+                results_df = results_df.append(results , ignore_index=True )#, 'Score': score
 
                 '''
                 # All the metrics compare in some way how close are the predicted vs. the actual values:
@@ -128,7 +133,7 @@ class Estimate:
                     indices = np.argsort(feature_importances)
 
                     for i, value in zip(indices, feature_importances):
-                        importances[feature_selection[i]] = value
+                        importances[feature_subset[i]] = value
 
                     importances_df.loc[model_name] = importances
 
@@ -136,12 +141,13 @@ class Estimate:
                     #print(' -',model_name,'does not output any feature importances.')
                     continue
 
+
             # Feature selection using SelectFromModel:
             #cls_LSV = LinearSVC(C=0.01, penalty="l1", dual=False).fit(X, y)
             #model = SelectFromModel(cls_LSV, prefit=True)
             #X_train_new = model.transform(X_train)
 
 
-        results_df = results_df.sort_values('Accuracy', ascending=False) #(by=['Accuracy'])
+        results_df = results_df.sort_values(['Accuracy','F1-Score'], ascending=False)
 
         return (results_df, importances_df)

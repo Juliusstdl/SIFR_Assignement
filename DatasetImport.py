@@ -16,26 +16,26 @@ from datetime import datetime
 
 class DatasetImport:
 
-    def __init__(self, path):
-        self.path = path
-        self.all_data = self.import_datasets(path)
+    def __init__(self, directory):
+        self.directory = directory
+        self.all_data = self.import_datasets(directory)
 
-    def import_datasets(self, path):
+    def import_datasets(self, directory):
         all_data = pd.DataFrame()
 
-        print('> Importing .csv-files from folder: ',path)
+        print('> Importing .csv-files from folder: ',directory)
         filecount = 0
 
         # Iterating over all .csv files in subdirectory:
-        for filename in os.listdir(path):
+        for filename in os.listdir(directory):
 
             if filename.endswith(".csv"):
                 print(' '+str(filecount)+': '+filename)
                 filecount += 1
 
-                with open(path+'/'+filename, 'r', encoding="utf8", newline='') as csvfile:
+                with open(directory+'/'+filename, 'r', encoding="utf8", newline='') as csvfile:
 
-                    raw_data = pd.read_csv(path+'/'+filename, header=None)
+                    raw_data = pd.read_csv(directory+'/'+filename, header=None)
 
                     # 1. Selecting dataframe columns for import:
                     data = raw_data[[31,16,22,0,3,15,4,30,29,20,11]]

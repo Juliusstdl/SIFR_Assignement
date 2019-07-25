@@ -1,9 +1,4 @@
->>> Entered slice value: 0.1
-> Importing .csv-files from folder:  Kickstarter_2019-07-18T03_20_05_009Z
- 0: Kickstarter.csv
- 1: Kickstarter001.csv
- ...
- 56: Kickstarter056.csv
+>>> Entered slice value: 0.25
 
 ========================= EXPLORATORY DATA ANALYSIS =========================
 > Total number of campaigns:  212378
@@ -283,111 +278,232 @@ Name: 0, dtype: object
 ============================= FEATURE-SELECTION =============================
 
 > Manual Feature-Pre-Selection:
-  backers_count,  converted_pledged_amount,  goal,  country,  staff_pick,  launched_at,  deadline,  cat_id,  cat_name,  subcat_name,  pos,  parent_id,  person_id,  person_name,  location_id,  location_name,  location_state,  location_type,  duration_days,  goal_exceeded,
+  - backers_count               used
+  - converted_pledged_amount            used
+  - goal                used
+  - country             used
+  - staff_pick          used
+  - spotlight           used
+  - launched_at                 used
+  - deadline            used
+  - cat_id              used
+  - cat_name            used
+  - subcat_name                 used
+  - pos                 used
+  - parent_id           used
+  - person_id           used
+  - person_name                 used
+  - location_id                 used
+  - location_name               used
+  - location_state              used
+  - location_type               used
+  - duration_days               used
+  - goal_exceeded               used
+  - divergence          not used
 
 =============================== DATASET SIZE ================================
 
 > Full useable / imported dataset:  (196491, 25)  /  (212378, 25)
-> Used dataset slice:  (19649, 20)  =  10.0 %   (as defined by user argument)
-> Testset:       (5895, 20)
-> Trainingset:   (13754, 20)
+> Used dataset slice:  (49123, 21)  =  25.0 %   (as defined by user argument)
+> Testset:       (14737, 21)
+> Trainingset:   (34386, 21)
 > Split ratio:   0.3 / 0.7
 
-=============================================================================
-
 > Normalizing datasets with  l2
+
+================================= ESTIMATING ================================
+
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\ensemble\forest.py:245: FutureWarning: The default value of n_estimators will change from 10 in version 0.20 to 100 in 0.22.
+  "10 in version 0.20 to 100 in 0.22.", FutureWarning)
+> ExtraTrees : Fitting... Predicting...
+         {'Model': 'ExtraTrees', 'Accuracy': 0.8780620207640633, 'F1-Score': 0.9011279229711142, 'Precision': 0.9040627069993376, 'Recall': 0.8982121311835033, 'MSE': 0.12193797923593676}
+
+> RandomForest : Fitting... Predicting...
+         {'Model': 'RandomForest', 'Accuracy': 0.6198683585533012, 'F1-Score': 0.7649181703734789, 'Precision': 0.6194521851423911, 'Recall': 0.9996709443896018, 'MSE': 0.3801316414466988}
+
+> AdaBoost : Fitting... Predicting...
+         {'Model': 'AdaBoost', 'Accuracy': 0.6552215511976658, 'F1-Score': 0.7800337676955711, 'Precision': 0.6443284222571878, 'Recall': 0.9881539980256664, 'MSE': 0.34477844880233427}
+
+> DecisionTree : Fitting... Predicting...
+         {'Model': 'DecisionTree', 'Accuracy': 0.6601750695528262, 'F1-Score': 0.7810231744643638, 'Precision': 0.6493855885988512, 'Recall': 0.9795985521553142, 'MSE': 0.33982493044717377}
+
+> NearestNeighbors : Fitting... Predicting...
+         {'Model': 'NearestNeighbors', 'Accuracy': 0.5715545904865305, 'F1-Score': 0.6777584974992344, 'Precision': 0.6337692087429607, 'Recall': 0.7283097510145882, 'MSE': 0.4284454095134695}
+
+> LinearSVM : Fitting... Predicting...
+         {'Model': 'LinearSVM', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+> RBF_SVM : Fitting... Predicting...
+         {'Model': 'RBF_SVM', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+> Nu_SVM : Fitting... Predicting...
+         {'Model': 'Nu_SVM', 'Accuracy': 0.4904661735767117, 'F1-Score': 0.5403684887066169, 'Precision': 0.6113573407202216, 'Recall': 0.48415048809915545, 'MSE': 0.5095338264232884}
+
+> NeuralNet : Fitting... Predicting...
+         {'Model': 'NeuralNet', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:432: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.
+  FutureWarning)
+> LogisticRegression : Fitting... Predicting...
+         {'Model': 'LogisticRegression', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\discriminant_analysis.py:693: UserWarning: Variables are collinear
+  warnings.warn("Variables are collinear")
+> QDA : Fitting... Predicting...
+         {'Model': 'QDA', 'Accuracy': 0.9897536812105585, 'F1-Score': 0.9917867827032908, 'Precision': 0.98370738023306, 'Recall': 1.0, 'MSE': 0.010246318789441542}
+
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\discriminant_analysis.py:388: UserWarning: Variables are collinear.
+  warnings.warn("Variables are collinear.")
+> LDA : Fitting... Predicting...
+         {'Model': 'LDA', 'Accuracy': 1.0, 'F1-Score': 1.0, 'Precision': 1.0, 'Recall': 1.0, 'MSE': 0.0}
+
+> NaiveBayes : Fitting... Predicting...
+         {'Model': 'NaiveBayes', 'Accuracy': 0.6293004003528534, 'F1-Score': 0.7313234643190872, 'Precision': 0.6628922967189729, 'Recall': 0.8155094877700998, 'MSE': 0.37069959964714666}
+
+> GradientBoosting : Fitting... Predicting...
+         {'Model': 'GradientBoosting', 'Accuracy': 0.6920675849901609, 'F1-Score': 0.7987226115497207, 'Precision': 0.6704892397051158, 'Recall': 0.9876055720083361, 'MSE': 0.3079324150098392}
+
+> RadiusNeighborsClassifier : Fitting... Predicting...
+         {'Model': 'RadiusNeighborsClassifier', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+> SGDClassifier : Fitting... Predicting...
+         {'Model': 'SGDClassifier', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+> RidgeClassifierCV : Fitting... Predicting...
+         {'Model': 'RidgeClassifierCV', 'Accuracy': 0.6183755174051706, 'F1-Score': 0.7641533171181749, 'Precision': 0.6185755991581234, 'Recall': 0.9993418887792037, 'MSE': 0.38162448259482934}
+
+> RidgeClassifier : Fitting... Predicting...
+         {'Model': 'RidgeClassifier', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+> PassiveAggressiveClassifier : Fitting... Predicting...
+         {'Model': 'PassiveAggressiveClassifier', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+> BaggingClassifier : Fitting... Predicting...
+         {'Model': 'BaggingClassifier', 'Accuracy': 0.9476148469837823, 'F1-Score': 0.9578694608164157, 'Precision': 0.9531877918974693, 'Recall': 0.9625973456180761, 'MSE': 0.052385153016217684}
+
+> BernoulliNB : Fitting... Predicting...
+         {'Model': 'BernoulliNB', 'Accuracy': 1.0, 'F1-Score': 1.0, 'Precision': 1.0, 'Recall': 1.0, 'MSE': 0.0}
+
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\model_selection\_split.py:1978: FutureWarning: The default value of cv will change from 3 to 5 in version 0.22. Specify it explicitly to silence this warning.
+  warnings.warn(CV_WARNING, FutureWarning)
+> CalibratedClassifierCV : Fitting... Predicting...
+         {'Model': 'CalibratedClassifierCV', 'Accuracy': 0.6179683789102259, 'F1-Score': 0.7637630077207117, 'Precision': 0.618484539585457, 'Recall': 0.9982450367445431, 'MSE': 0.38203162108977406}
+
+> LabelPropagation : Fitting... Predicting...
+         {'Model': 'LabelPropagation', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+> LabelSpreading : Fitting... Predicting...
+         {'Model': 'LabelSpreading', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+> LinearSVC : Fitting... Predicting...
+         {'Model': 'LinearSVC', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\model_selection\_split.py:1978: FutureWarning: The default value of cv will change from 3 to 5 in version 0.22. Specify it explicitly to silence this warning.
+  warnings.warn(CV_WARNING, FutureWarning)
+> LogisticRegressionCV : Fitting... Predicting...
+         {'Model': 'LogisticRegressionCV', 'Accuracy': 0.6383253036574608, 'F1-Score': 0.761585256754339, 'Precision': 0.6430243976131128, 'Recall': 0.9337501371065043, 'MSE': 0.3616746963425392}
+
+> MultinomialNB : Fitting... Predicting...
+         {'Model': 'MultinomialNB', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+
+> NearestCentroid : Fitting... Predicting...
+         {'Model': 'NearestCentroid', 'Accuracy': 0.49290900454637987, 'F1-Score': 0.536730518876697, 'Precision': 0.6171941830624466, 'Recall': 0.47482724580454094, 'MSE': 0.5070909954536201}
+
+> Perceptron : Fitting... Predicting...
+         {'Model': 'Perceptron', 'Accuracy': 0.6179005224944019, 'F1-Score': 0.7628952798012548, 'Precision': 0.61912247129579, 'Recall': 0.993638258198969, 'MSE': 0.38209947750559814}
+
 
 ============================== FEATURE RANKING ==============================
 
 > Table containing importance of every feature with different classifiers:
 
-                  backers_count  converted_pledged_amount  goal  country  staff_pick  launched_at  deadline    cat_id  cat_name  subcat_name  pos  parent_id  person_id  person_name  location_id  location_name  location_state  location_type  duration_days  goal_exceeded
-ExtraTrees                  0.0                       0.0   0.0      0.0    0.079127     0.060749  0.000000  0.034402  0.060584     0.098086  0.0   0.132135   0.062096     0.066686     0.057732            0.0        0.000000       0.288428       0.000000       0.059976
-RandomForest                0.0                       0.0   0.0      0.0    0.000416     0.000027  0.049755  0.000000  0.124163     0.004465  0.0   0.284746   0.035598     0.227401     0.061413            0.0        0.000000       0.198547       0.000000       0.013469
-AdaBoost                    0.0                       0.0   0.0      0.0    0.000000     0.000000  0.000000  0.000000  0.000000     0.000000  0.2   0.140000   0.000000     0.280000     0.000000            0.0        0.200000       0.140000       0.000000       0.040000
-DecisionTree                0.0                       0.0   0.0      0.0    0.000000     0.000000  0.000000  0.000668  0.000000     0.000000  0.0   0.000000   0.082338     0.002932     0.000000            0.0        0.534190       0.378370       0.000000       0.001503
-GradientBoosting            0.0                       0.0   0.0      0.0    0.000000     0.000001  0.000000  0.003624  0.014290     0.000030  0.0   0.000000   0.005086     0.081380     0.000000            0.0        0.428459       0.453374       0.013674       0.000084
-Total                       0.0                       0.0   0.0      0.0    0.079543     0.060778  0.049755  0.038694  0.199038     0.102581  0.2   0.556880   0.185117     0.658399     0.119144            0.0        1.162648       1.458718       0.013674       0.115031
+                  backers_count  converted_pledged_amount  goal   country  staff_pick  spotlight  launched_at  deadline    cat_id  cat_name  subcat_name  pos  parent_id  person_id  person_name  location_id  location_name  location_state  location_type  duration_days  goal_exceeded
+ExtraTrees               0.0000                       0.0   0.0  0.000000    0.076517   0.064951     0.067809  0.064548  0.032908   0.00000     0.096169  0.0   0.127013   0.000000     0.070969     0.062658       0.000000        0.000000       0.270812       0.000000       0.065646
+RandomForest             0.0371                       0.0   0.0  0.000000    0.000365   0.061325     0.000000  0.139857  0.000000   0.00000     0.055020  0.0   0.259545   0.127326     0.074737     0.000000       0.005853        0.000000       0.213143       0.000000       0.025730
+AdaBoost                 0.0000                       0.0   0.0  0.000000    0.000000   0.000000     0.000000  0.000000  0.000000   0.10000     0.000000  0.0   0.000000   0.020000     0.400000     0.000000       0.000000        0.120000       0.240000       0.100000       0.020000
+DecisionTree             0.0000                       0.0   0.0  0.000608    0.000000   0.000000     0.000000  0.000000  0.000000   0.00000     0.000000  0.0   0.000000   0.000000     0.000000     0.000000       0.000000        0.325892       0.604490       0.017833       0.051176
+GradientBoosting         0.0000                       0.0   0.0  0.000000    0.000000   0.000000     0.000000  0.000532  0.017782   0.01871     0.000000  0.0   0.000000   0.004508     0.072508     0.000000       0.003184        0.434290       0.448487       0.000000       0.000000
 
 > Features with highest importance with different classifiers:
-                     Feature  Importance
-0              location_type    1.458718
-1             location_state    1.162648
-2                person_name    0.658399
-3                  parent_id    0.556880
-4                        pos    0.200000
-5                   cat_name    0.199038
-6                  person_id    0.185117
-7                location_id    0.119144
-8              goal_exceeded    0.115031
-9                subcat_name    0.102581
-10                staff_pick    0.079543
-11               launched_at    0.060778
-12                  deadline    0.049755
-13                    cat_id    0.038694
-14             duration_days    0.013674
-15             backers_count    0.000000
-16  converted_pledged_amount    0.000000
-17                      goal    0.000000
-18                   country    0.000000
-19             location_name    0.000000
+                          Importance
+location_type               1.776932
+location_state              0.880182
+person_name                 0.618214
+parent_id                   0.386557
+deadline                    0.204937
+goal_exceeded               0.162553
+person_id                   0.151835
+subcat_name                 0.151188
+spotlight                   0.126276
+cat_name                    0.118710
+duration_days               0.117833
+staff_pick                  0.076882
+launched_at                 0.067809
+location_id                 0.062658
+cat_id                      0.050690
+backers_count               0.037100
+location_name               0.009036
+country                     0.000608
+converted_pledged_amount    0.000000
+pos                         0.000000
+goal                        0.000000
 
-> Univariate automatic feature selection:
-Applying SelectKBest class to extract top best features:
+
+> Univariate automatic feature selection:  Applying SelectKBest class to extract top best features:
                      Feature         Score
-0              backers_count  1.605708e+07
-1   converted_pledged_amount  1.422067e+09
 2                       goal  6.903619e+09
-3                    country  3.897556e+02
+15               location_id  1.757067e+09
+6                launched_at  1.458168e+09
+1   converted_pledged_amount  1.422067e+09
+7                   deadline  1.314653e+09
+13                 person_id  8.170944e+07
+0              backers_count  1.605708e+07
+8                     cat_id  1.734930e+06
+5                  spotlight  7.554100e+04
+20             goal_exceeded  7.030779e+04
+14               person_name  3.971712e+04
+10               subcat_name  3.692785e+04
+19             duration_days  2.175141e+04
 4                 staff_pick  9.948290e+03
-5                launched_at  1.458168e+09
-6                   deadline  1.314653e+09
-7                     cat_id  1.734930e+06
-8                   cat_name  9.252293e+02
-9                subcat_name  3.692785e+04
-10                       pos  1.501928e+02
-11                 parent_id  7.038880e+03
-12                 person_id  8.170944e+07
-13               person_name  3.971712e+04
-14               location_id  1.757067e+09
-15             location_name  5.238382e+03
-16            location_state  5.109208e+00
-17             location_type  4.964885e+01
-18             duration_days  2.175141e+04
-19             goal_exceeded  7.030779e+04
+12                 parent_id  7.038880e+03
+16             location_name  5.238382e+03
+9                   cat_name  9.252293e+02
+3                    country  3.897557e+02
+11                       pos  1.501928e+02
+18             location_type  4.964885e+01
+17            location_state  5.109210e+00
 
 ========================== PREDICTION MODEL RANKING ==========================
 
                           Model  Accuracy  F1-Score  Precision    Recall       MSE
-11                          QDA  0.957082  0.964521   0.981450  0.948167  0.042918
-12                          LDA  0.956743  0.963587   0.999408  0.930245  0.043257
-21                  BernoulliNB  0.953859  0.961873   0.978329  0.945961  0.046141
-20            BaggingClassifier  0.949279  0.958662   0.961453  0.955886  0.050721
-0                    ExtraTrees  0.885157  0.905933   0.913165  0.898814  0.114843
-14             GradientBoosting  0.717557  0.809823   0.691303  0.977392  0.282443
-3                  DecisionTree  0.681934  0.793161   0.661089  0.991177  0.318066
-2                      AdaBoost  0.668363  0.784810   0.653170  0.982906  0.331637
-1                  RandomForest  0.661408  0.783185   0.646173  0.993934  0.338592
-26         LogisticRegressionCV  0.635793  0.764092   0.635185  0.958644  0.364207
-23             LabelPropagation  0.615267  0.761815   0.615267  1.000000  0.384733
-22       CalibratedClassifierCV  0.615267  0.761815   0.615267  1.000000  0.384733
-18              RidgeClassifier  0.615267  0.761815   0.615267  1.000000  0.384733
-24               LabelSpreading  0.615267  0.761815   0.615267  1.000000  0.384733
-25                    LinearSVC  0.615267  0.761815   0.615267  1.000000  0.384733
-27                MultinomialNB  0.615267  0.761815   0.615267  1.000000  0.384733
-19  PassiveAggressiveClassifier  0.615267  0.761815   0.615267  1.000000  0.384733
-15    RadiusNeighborsClassifier  0.615267  0.761815   0.615267  1.000000  0.384733
-16                SGDClassifier  0.615267  0.761815   0.615267  1.000000  0.384733
-10           LogisticRegression  0.615267  0.761815   0.615267  1.000000  0.384733
-9                     NeuralNet  0.615267  0.761815   0.615267  1.000000  0.384733
-8               GaussianProcess  0.615267  0.761815   0.615267  1.000000  0.384733
-6                       RBF_SVM  0.615267  0.761815   0.615267  1.000000  0.384733
-5                     LinearSVM  0.615267  0.761815   0.615267  1.000000  0.384733
-29                   Perceptron  0.615267  0.761815   0.615267  1.000000  0.384733
-17            RidgeClassifierCV  0.615098  0.761585   0.615280  0.999173  0.384902
-13                   NaiveBayes  0.592706  0.583232   0.787254  0.463193  0.407294
-4              NearestNeighbors  0.558439  0.666068   0.622841  0.715743  0.441561
-28              NearestCentroid  0.500594  0.537398   0.624772  0.471464  0.499406
-7                        Nu_SVM  0.437150  0.323961   0.620609  0.219189  0.562850
+11                          LDA  1.000000  1.000000   1.000000  1.000000  0.000000
+20                  BernoulliNB  1.000000  1.000000   1.000000  1.000000  0.000000
+10                          QDA  0.989754  0.991787   0.983707  1.000000  0.010246
+19            BaggingClassifier  0.947615  0.957869   0.953188  0.962597  0.052385
+0                    ExtraTrees  0.878062  0.901128   0.904063  0.898212  0.121938
+13             GradientBoosting  0.692068  0.798723   0.670489  0.987606  0.307932
+3                  DecisionTree  0.660175  0.781023   0.649386  0.979599  0.339825
+2                      AdaBoost  0.655222  0.780034   0.644328  0.988154  0.344778
+25         LogisticRegressionCV  0.638325  0.761585   0.643024  0.933750  0.361675
+12                   NaiveBayes  0.629300  0.731323   0.662892  0.815509  0.370700
+1                  RandomForest  0.619868  0.764918   0.619452  0.999671  0.380132
+5                     LinearSVM  0.618647  0.764400   0.618647  1.000000  0.381353
+6                       RBF_SVM  0.618647  0.764400   0.618647  1.000000  0.381353
+8                     NeuralNet  0.618647  0.764400   0.618647  1.000000  0.381353
+9            LogisticRegression  0.618647  0.764400   0.618647  1.000000  0.381353
+14    RadiusNeighborsClassifier  0.618647  0.764400   0.618647  1.000000  0.381353
+15                SGDClassifier  0.618647  0.764400   0.618647  1.000000  0.381353
+17              RidgeClassifier  0.618647  0.764400   0.618647  1.000000  0.381353
+18  PassiveAggressiveClassifier  0.618647  0.764400   0.618647  1.000000  0.381353
+22             LabelPropagation  0.618647  0.764400   0.618647  1.000000  0.381353
+23               LabelSpreading  0.618647  0.764400   0.618647  1.000000  0.381353
+24                    LinearSVC  0.618647  0.764400   0.618647  1.000000  0.381353
+26                MultinomialNB  0.618647  0.764400   0.618647  1.000000  0.381353
+16            RidgeClassifierCV  0.618376  0.764153   0.618576  0.999342  0.381624
+21       CalibratedClassifierCV  0.617968  0.763763   0.618485  0.998245  0.382032
+28                   Perceptron  0.617901  0.762895   0.619122  0.993638  0.382099
+4              NearestNeighbors  0.571555  0.677758   0.633769  0.728310  0.428445
+27              NearestCentroid  0.492909  0.536731   0.617194  0.474827  0.507091
+7                        Nu_SVM  0.490466  0.540368   0.611357  0.484150  0.509534
 
 =============================================================================

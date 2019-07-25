@@ -3,8 +3,8 @@
 #
 # SFIR assignement: predicting campaign success on kickstarter using ML
 # @author:   Julius Steidl
-# date:     23.07.2019
-# version:  1.7
+# date:     25.07.2019
+# version:  1.8
 # NOTE:     folder with .csv files is required:  ./Kickstarter_2019-07-18T03_20_05_009Z/
 #           source:  https://s3.amazonaws.com/weruns/forfun/Kickstarter/Kickstarter_2019-07-18T03_20_05_009Z.zip
 
@@ -22,6 +22,7 @@ import ast
 import re
 import operator
 from collections import defaultdict
+import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import normalize
@@ -75,10 +76,88 @@ from sklearn.svm import SVC
 #from sklearn.mixture import GaussianMixture
 #from sklearn.mixture import VBGMM
 
-#import matplotlib.pyplot as plt
-
-
+# Muting the warning-messages:
 pd.options.mode.chained_assignment = None  # default='warn'
+
+
+# NOTE:  Set 'directory'-string to name of the folder containing the .csv input files:
+directory = 'Kickstarter_2019-07-18T03_20_05_009Z'  # date: 2019-07-18
+
+
+# Normalization (L1 & L2):
+# NOTE:  Change 'normtype' value to 'l1' / 'l2' to change normalization type:
+normtype = 'l2'#'l1'
+
+
+# model_selection is used for manually enabling the individual models.
+# NOTE:  Setting boolean value, eanbles/disables model.
+model_selection = {
+	'ExtraTrees': ( True, ExtraTreesClassifier() ),
+	'RandomForest': ( True, RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1) ),
+	'AdaBoost': ( True, AdaBoostClassifier() ),
+	'DecisionTree': ( True, DecisionTreeClassifier(max_depth=5) ),
+	'NearestNeighbors': (True, KNeighborsClassifier(n_neighbors=5) ), # (n_neighbors=4) ),
+	'LinearSVM': ( True, SVC(kernel="linear", C=0.025) ),  # (C=0.01, penalty="l1", dual=False) ),
+	'RBF_SVM': (True, SVC(gamma='auto') ),#gamma=2, C=1) ), #
+	'Nu_SVM': (True, NuSVC(gamma='auto') ),
+	'GaussianProcess': (False, GaussianProcessClassifier() ), #(1.0 * RBF(1.0)) ),
+	'NeuralNet': (True, MLPClassifier(alpha=1, max_iter=1000) ),
+	'LogisticRegression': (True, LogisticRegression() ),
+	'QDA': (True, QuadraticDiscriminantAnalysis() ),
+	'LDA': (True, LinearDiscriminantAnalysis() ),
+	'NaiveBayes': (True,  GaussianNB() ),
+	'GradientBoosting': (True, GradientBoostingClassifier() ),
+	'RadiusNeighborsClassifier': (True, RadiusNeighborsClassifier() ),
+	'SGDClassifier': (True, SGDClassifier() ),
+	'RidgeClassifierCV': (True, RidgeClassifierCV() ),
+	'RidgeClassifier': (True, RidgeClassifier() ),
+	'PassiveAggressiveClassifier': (True, PassiveAggressiveClassifier() ),
+	'BaggingClassifier': (True, BaggingClassifier() ),
+	'BernoulliNB': (True, BernoulliNB() ),
+	'CalibratedClassifierCV': (True, CalibratedClassifierCV() ),
+	'LabelPropagation': (True, LabelPropagation() ),
+	'LabelSpreading': (True, LabelSpreading() ),
+	'LinearSVC': (True, LinearSVC() ),
+	'LogisticRegressionCV': (True, LogisticRegressionCV() ),
+	'MultinomialNB': (True, MultinomialNB() ),
+	'NearestCentroid': (True, NearestCentroid() ),
+	'Perceptron': (True, Perceptron() ),
+	#'OneClassSVM': (True, OneClassSVM() ),
+	#'ClassifierChain': (True, ClassifierChain() ),
+	#'MultiOutputClassifier': (True, MultiOutputClassifier() ),
+	#'OutputCodeClassifier': (True, OutputCodeClassifier() ),
+	#'OneVsOneClassifier': (True, OneVsOneClassifier() ),
+	#'OneVsRestClassifier': (True, OneVsRestClassifier() ),
+}
+
+
+# feature_set is used for manually enabling the individual features.
+# NOTE:  setting boolean value, eanbles/disables feature.
+feature_set = {
+    'backers_count': True,
+    'converted_pledged_amount': True,
+    'goal': True,
+    'country': True,
+    'staff_pick': True,
+    'spotlight': True,
+    'launched_at': True,
+    'deadline': True,
+    'cat_id': True,
+    'cat_name': True,
+    'subcat_name': True,
+    'pos': True,
+    'parent_id': True,
+    'person_id': True,
+    'person_name': True,
+    'location_id': True,
+    'location_name': True,
+    'location_state': True,
+    'location_type': True,
+    'duration_days': True,
+    'goal_exceeded': True,
+    'divergence': False # feature contains negative value!
+}
+# labels = ['state', 'id', 'name']
 
 
 def handle_arguments(argv):
@@ -87,7 +166,6 @@ def handle_arguments(argv):
     if len(argv[1:]) > 1:
     	for arg in argv:
     		if re.match('^\d\.\d+?$', arg) is not None:
-    			print('numeric')
     			if float(arg) < 1.0 and float(arg) > 0.0:
     				slice_value = float(arg)
     				print('>>> Entered slice value:',slice_value)
@@ -104,23 +182,6 @@ def handle_arguments(argv):
     return (skipimport, skipstats, slice_value)
 
 
-def rank_feature_importance(importances):
-    importances.loc['Total',:]= importances.sum(axis=0)
-
-    importance_ranking = (importances.iloc[-1:].reset_index(drop=True)).to_dict()
-    for feature, value in importance_ranking.items():
-        importance_ranking[feature] = value.get(0)
-
-    importance_ranking = sorted(importance_ranking.items(), key=operator.itemgetter(1), reverse=True)
-
-    # Create dataframe from dictionry with results:
-    importance_ranking_df = pd.DataFrame.from_dict(importance_ranking)
-    importance_ranking_df.columns = ['Feature', 'Importance']
-    importance_ranking_df.sort_values(by=['Importance'])
-
-    return importance_ranking_df
-
-
 def main():
     # Handling user arguments, if existing:
     skipimport, skipstats, slice_value = handle_arguments(sys.argv)
@@ -128,15 +189,13 @@ def main():
 
     # I. Importing Dataset & Data Cleaning:
 
-    path = 'Kickstarter_2019-07-18T03_20_05_009Z'  # date: 2019-07-18
-
     # saving / loading dataframe as .pickle file  (-> not necessary to parse .csv-files every time):
-    if skipimport and os.path.exists(path+'.pickle') and os.path.isfile(path+'.pickle'):
-        data = pd.read_pickle('./'+path+'.pickle')
+    if skipimport and os.path.exists(directory+'.pickle') and os.path.isfile(directory+'.pickle'):
+        data = pd.read_pickle('./'+directory+'.pickle')
     else:
-        datasetImport = DatasetImport(path)
+        datasetImport = DatasetImport(directory)
         data = datasetImport.all_data
-        data.to_pickle(path+'.pickle')
+        data.to_pickle(directory+'.pickle')
 
 
 
@@ -169,18 +228,20 @@ def main():
     # IV. Feature-Selection:
 
     # a) Manual Feature-Pre-Selection:
-
-    # NOTE:  manually add/remove features in following line forfeature-selection:
-    feature_preselection = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration_days', 'goal_exceeded']#, 'divergence'] #'spotlight'
-    # features = ['backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration_days', 'divergence', 'goal_exceeded']
-
-    X = data_encoded[feature_preselection]
-    y = data_encoded['state']
-
     print('\n============================= FEATURE-SELECTION =============================\n')
     print('> Manual Feature-Pre-Selection:')
-    for feature in feature_preselection:
-        print(' ',feature, end=',')
+
+    feature_subset = []
+    for feature, active in feature_set.items():
+        if active:
+            feature_subset.append(feature)
+            print('  -',feature,'\t\tused')
+        else:
+            print('  -',feature,'\t\tnot used')
+
+    # Dividing dataset into X (=features), and y (=labels):
+    X = data_encoded[feature_subset]
+    y = data_encoded['state']
 
     # b) Automatic Feature-Selection:
 
@@ -193,15 +254,19 @@ def main():
     data_scores = pd.DataFrame(fit.scores_)
     data_columns = pd.DataFrame(X.columns)
     # Concat two dataframes for better visualization:
-    feature_scores = pd.concat([data_columns, data_scores],axis=1)
-    feature_scores.columns = ['Feature','Score']
-    feature_scores.sort_values(by=['Score'])
+    feature_scores_df = pd.concat([data_columns, data_scores], axis=1)
+    feature_scores_df.columns = ['Feature', 'Score']
+    feature_scores_df = feature_scores_df.round(5)
+    feature_scores_df = feature_scores_df.sort_values(by=['Score'], ascending=False)
 
     # Removing features with low variance:
     #remover = VarianceThreshold(threshold=(.8 * (1 - .8)))
     #X = remover.fit_transform(X)
     #print(X.iloc[0]) # =header
 
+
+
+    # V. Data division into Training and Test datasets & Normalization:
 
     # Using the user argument value to set the set the slice of the imported dataset beeing used:
     rows, cols = data_filtered.shape
@@ -211,98 +276,63 @@ def main():
         y = y.head(slice)
 
 
-
-    # V. Data division into Training and Test datasets & Normalization:
-
     # Dividing dataset into Training and Test datasets according to predifined ratio:
     ratio = 0.3
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=ratio)
 
-    print('\n\n=============================== DATASET SIZE ================================\n')
+    print('\n=============================== DATASET SIZE ================================\n')
     print('> Full useable / imported dataset: ',data_filtered.shape,' / ',data.shape)
     if slice_value < 1.0:
         print('> Used dataset slice: ',X.shape,' = ',slice_value*100.0,'%   (as defined by user argument)')
     print('> Testset:\t',X_test.shape)
     print('> Trainingset:\t',X_train.shape)
     print('> Split ratio:  ',ratio,'/',1.0-ratio)
-    print('\n=============================================================================\n')
 
 
     # Normalization (L1 & L2):
-    # NOTE:  Change 'normtype' value to 'l1' / 'l2' to change normalization type:
-    normtype = 'l2'#'l1'
-    print('> Normalizing datasets with ', normtype,'\n')
+    print('\n> Normalizing datasets with ', normtype)
     X_test= normalize(X_test, norm=normtype)
     X_train = normalize(X_train, norm=normtype)
 
 
 
-    # VI. Prediction & Classification:
+    # VI. Estimation: Prediction & Classification:
 
-    # model_selection is used for manually enabeling the individual models.
-    # NOTE:  setting boolean value, eanbles/disables model
-    model_selection = {
-        'ExtraTrees': ( True, ExtraTreesClassifier() ),
-        'RandomForest': ( True, RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1) ),
-        'AdaBoost': ( True, AdaBoostClassifier() ),
-        'DecisionTree': ( True, DecisionTreeClassifier(max_depth=5) ),
-        'NearestNeighbors': (True, KNeighborsClassifier(n_neighbors=5) ), # (n_neighbors=4) ),
-        'LinearSVM': ( True, SVC(kernel="linear", C=0.025) ),  # (C=0.01, penalty="l1", dual=False) ),
-        'RBF_SVM': (True, SVC(gamma=2, C=1) ), # (gamma='auto') ),
-        'Nu_SVM': (True, NuSVC() ),
-        'GaussianProcess': (True, GaussianProcessClassifier() ), #(1.0 * RBF(1.0)) ),
-        'NeuralNet': (True, MLPClassifier(alpha=1, max_iter=1000) ),
-        'LogisticRegression': (True, LogisticRegression() ),
-        'QDA': (True, QuadraticDiscriminantAnalysis() ),
-        'LDA': (True, LinearDiscriminantAnalysis() ),
-        'NaiveBayes': (True,  GaussianNB() ),
-        'GradientBoosting': (True, GradientBoostingClassifier() ),
-        'RadiusNeighborsClassifier': (True, RadiusNeighborsClassifier() ),
-        'SGDClassifier': (True, SGDClassifier() ),
-        'RidgeClassifierCV': (True, RidgeClassifierCV() ),
-        'RidgeClassifier': (True, RidgeClassifier() ),
-        'PassiveAggressiveClassifier': (True, PassiveAggressiveClassifier() ),
-        'BaggingClassifier': (True, BaggingClassifier() ),
-        'BernoulliNB': (True, BernoulliNB() ),
-        'CalibratedClassifierCV': (True, CalibratedClassifierCV() ),
-        'LabelPropagation': (True, LabelPropagation() ),
-        'LabelSpreading': (True, LabelSpreading() ),
-        'LinearSVC': (True, LinearSVC() ),
-        'LogisticRegressionCV': (True, LogisticRegressionCV() ),
-        'MultinomialNB': (True, MultinomialNB() ),
-        'NearestCentroid': (True, NearestCentroid() ),
-        'Perceptron': (True, Perceptron() ),
-        #'OneClassSVM': (True, OneClassSVM() ),
-        #'ClassifierChain': (True, ClassifierChain() ),
-        #'MultiOutputClassifier': (True, MultiOutputClassifier() ),
-        #'OutputCodeClassifier': (True, OutputCodeClassifier() ),
-        #'OneVsOneClassifier': (True, OneVsOneClassifier() ),
-        #'OneVsRestClassifier': (True, OneVsRestClassifier() ),
-    }
+    print('\n================================= ESTIMATING ================================\n')
 
-    estimate = Estimate(model_selection, X_test, y_test, X_train, y_train, feature_preselection)
-    results_df, importances = estimate.results
+    estimate = Estimate(model_selection, X_test, y_test, X_train, y_train, feature_subset)
+    results_df, importances_df = estimate.results
 
 
     print('\n============================== FEATURE RANKING ==============================\n')
-    importance_ranking = rank_feature_importance(importances)
 
     print('> Table containing importance of every feature with different classifiers:\n')
-    print(importances.to_string(),'\n')
+    print(importances_df.to_string(),'\n')
+    importances_figure = importances_df.plot.barh(stacked=True)
+    plt.savefig('feature_importances.png')
+    plt.show()
 
 
     print('> Features with highest importance with different classifiers:')
-    print(importance_ranking)
+    importances_sum = importances_df.sum(axis = 0, skipna = True)
+    importances_sum_df = importances_sum.to_frame()
+    importances_sum_df.columns = ['Importance']
+    importances_sum_df = importances_sum_df.sort_values(by=['Importance'], ascending=False)
+
+    print(importances_sum_df.to_string(),'\n')
 
 
-    print('\n> Univariate automatic feature selection:\nApplying SelectKBest class to extract top best features:')
-    print(feature_scores)
-    #print(feature_scores.round({'Score': 3}))
-    #print(feature_scores.nlargest(20,'Score', ))  #print n best features
+    print('\n> Univariate automatic feature selection:  Applying SelectKBest class to extract top best features:')
+    print(feature_scores_df)
+    #print(feature_scores_df.round({'Score': 3}))
+    #print(feature_scores_df.nlargest(20,'Score', ))  #print n best features
 
 
     print('\n========================== PREDICTION MODEL RANKING ==========================\n')
     print(results_df.to_string())
+    results_df.plot.barh(x='Model')
+    plt.show()
+    plt.savefig('pred_model_rank.png')
 
     print('\n=============================================================================')
 
