@@ -83,6 +83,8 @@ pd.options.mode.chained_assignment = None  # default='warn'
 # NOTE:  Set 'directory'-string to name of the folder containing the .csv input files:
 directory = 'Kickstarter_2019-07-18T03_20_05_009Z'  # date: 2019-07-18
 
+# NOTE:  Adjust Trainingset / Testset division ratio:
+divratio = 0.3
 
 # Normalization (L1 & L2):
 # NOTE:  Change 'normtype' value to 'l1' / 'l2' to change normalization type:
@@ -92,12 +94,15 @@ normtype = 'l2'#'l1'
 # model_selection is used for manually enabling the individual models.
 # NOTE:  Setting boolean value, eanbles/disables model.
 model_selection = {
-    'ExtraTrees': ( True, ExtraTreesClassifier() ),
+    'ExtraTrees': ( True, ExtraTreesClassifier(n_estimators='warn', criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None, bootstrap=False, oob_score=False, n_jobs=None, random_state=None, verbose=0, warm_start=False, class_weight=None) ),
     'RandomForest': ( True, RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1) ),
-    'AdaBoost': ( True, AdaBoostClassifier() ),
-    'DecisionTree': ( True, DecisionTreeClassifier(max_depth=5) ),
+    'AdaBoost': ( True, AdaBoostClassifier(base_estimator=None, n_estimators=50, learning_rate=1.0, algorithm='SAMME.R', random_state=None) ),
+    'DecisionTree': ( True, DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=5, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None, class_weight=None, presort=False) ),
+    'GradientBoosting': (True, GradientBoostingClassifier(loss='deviance', learning_rate=0.1, n_estimators=100, subsample=1.0, criterion='friedman_mse', min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_depth=3, min_impurity_decrease=0.0, min_impurity_split=None, init=None, random_state=None, max_features=None, verbose=0, max_leaf_nodes=None, warm_start=False, presort='auto', validation_fraction=0.1, n_iter_no_change=None, tol=0.0001) ),
+    'BernoulliNB': (True, BernoulliNB(alpha=1.0, binarize=0.0, fit_prior=True, class_prior=None) ),
+    'BaggingClassifier': (True, BaggingClassifier(base_estimator=None, n_estimators=10, max_samples=1.0, max_features=1.0, bootstrap=True, bootstrap_features=False, oob_score=False, warm_start=False, n_jobs=None, random_state=None, verbose=0) ),
     'NearestNeighbors': (True, KNeighborsClassifier(n_neighbors=5) ), # (n_neighbors=4) ),
-    'LinearSVM': ( True, SVC(kernel="linear", C=0.025) ),  # (C=0.01, penalty="l1", dual=False) ),
+    'LinearSVM': ( True, SVC(kernel='linear', C=0.025) ),  # (C=0.01, penalty='l1', dual=False) ),
     'RBF_SVM': (True, SVC(gamma='auto') ),#gamma=2, C=1) ), #
     'Nu_SVM': (True, NuSVC(gamma='auto') ),
     'GaussianProcess': (False, GaussianProcessClassifier() ), #(1.0 * RBF(1.0)) ),
@@ -106,17 +111,14 @@ model_selection = {
     'QDA': (True, QuadraticDiscriminantAnalysis() ),
     'LDA': (True, LinearDiscriminantAnalysis() ),
     'NaiveBayes': (True,  GaussianNB() ),
-    'GradientBoosting': (True, GradientBoostingClassifier() ),
     'RadiusNeighborsClassifier': (True, RadiusNeighborsClassifier() ),
     'SGDClassifier': (True, SGDClassifier() ),
     'RidgeClassifierCV': (True, RidgeClassifierCV() ),
     'RidgeClassifier': (True, RidgeClassifier() ),
     'PassiveAggressiveClassifier': (True, PassiveAggressiveClassifier() ),
-    'BaggingClassifier': (True, BaggingClassifier() ),
-    'BernoulliNB': (True, BernoulliNB() ),
     'CalibratedClassifierCV': (True, CalibratedClassifierCV() ),
     'LabelPropagation': (True, LabelPropagation() ),
-    'LabelSpreading': (True, LabelSpreading() ),
+    'LabelSpreading': (False, LabelSpreading() ),
     'LinearSVC': (True, LinearSVC() ),
     'LogisticRegressionCV': (True, LogisticRegressionCV() ),
     'MultinomialNB': (True, MultinomialNB() ),
@@ -173,7 +175,7 @@ def handle_arguments(argv):
                     slice_value = float(arg)
                     print('>>> Entered slice value:',slice_value)
                 else:
-                    print('>>> Please enter a float value between 0.0 and 1.0 to determine the slice of the imported dataset beeing used >>>\n')
+                    print('>>> Input Error: Please enter a float value between 0.0 and 1.0 to determine the slice of the imported dataset beeing used >>>\n')
             # Skipping new dataset import and statistics generation:
             if arg in ['-skipall', 'skipall', '-skip', 'skip']:
                 skipimport = True; skipstats = True
@@ -238,13 +240,14 @@ def main():
     for feature, active in feature_set.items():
         if active:
             feature_subset.append(feature)
-            print('  -',feature,'\t\tused')
+            print('  - active   ',feature)
         else:
-            print('  -',feature,'\t\tnot used')
+            print('  - inactive ',feature,)
 
     # Dividing dataset into X (=features), and y (=labels):
     X = data_encoded[feature_subset]
     y = data_encoded['state']
+
 
     # b) Automatic Feature-Selection:
 
@@ -280,8 +283,7 @@ def main():
 
 
     # Dividing dataset into Training and Test datasets according to predifined ratio:
-    ratio = 0.3
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=ratio)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=divratio)
 
     print('\n=============================== DATASET SIZE ================================\n')
     print('> Full useable / imported dataset: ',data_filtered.shape,' / ',data.shape)
@@ -289,7 +291,7 @@ def main():
         print('> Used dataset slice: ',X.shape,' = ',slice_value*100.0,'%   (as defined by user argument)')
     print('> Testset:\t',X_test.shape)
     print('> Trainingset:\t',X_train.shape)
-    print('> Split ratio:  ',ratio,'/',1.0-ratio)
+    print('> Split ratio:  ',divratio,'/',1.0-divratio)
 
 
     # Normalization (L1 & L2):
@@ -308,15 +310,16 @@ def main():
 
 
     print('\n============================== FEATURE RANKING ==============================\n')
+    print('> FEATURE IMPORTANCE:  Models supporting feature_importances_:\n  ',list(importances_df.index),'\n')
 
-    print('> Table containing importance of every feature with different classifiers:\n')
-    print(importances_df.to_string(),'\n')
+    #print('> Table containing importance of every feature (only from models supporting feature_importances_):')
+    #print(importances_df.to_string(),'\n')
     importances_figure = importances_df.plot.barh(stacked=True)
     plt.savefig('feature_importances.png')
     plt.show()
 
 
-    print('> Features with highest importance with different classifiers:')
+    print('> Features with highest importance (only from models supporting feature_importances_):')
     importances_sum = importances_df.sum(axis = 0, skipna = True)
     importances_sum_df = importances_sum.to_frame()
     importances_sum_df.columns = ['Importance']
@@ -325,7 +328,7 @@ def main():
     print(importances_sum_df.to_string(),'\n')
 
 
-    print('\n> Univariate automatic feature selection:  Applying SelectKBest class to extract top best features:')
+    print('\n> Univariate automatic feature selection:  Applying SelectKBest class to extract best features:')
     print(feature_scores_df)
     #print(feature_scores_df.round({'Score': 3}))
     #print(feature_scores_df.nlargest(20,'Score', ))  #print n best features

@@ -38,6 +38,14 @@ class Preprocessing:
         data['location_name'] = labelencoder.fit_transform(data['location_name'])
         data['location_state'] = labelencoder.fit_transform(data['location_state'])
         data['location_type'] = labelencoder.fit_transform(data['location_type'])
+        data['year'] = labelencoder.fit_transform(data['year'])
+        data['month'] = labelencoder.fit_transform(data['month'])
+
+
+        data['cat_id'] = labelencoder.fit_transform(data['cat_id'])
+        data['parent_id'] = labelencoder.fit_transform(data['parent_id'])
+        data['person_id'] = labelencoder.fit_transform(data['person_id'])
+        data['location_id'] = labelencoder.fit_transform(data['location_id'])
         #data['duration_days'] = labelencoder.fit_transform(data['duration_days'])
 
         # Fill numeric fields containing NaN dummy-value with 0 as value required for fiting model:
