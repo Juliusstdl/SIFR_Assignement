@@ -271,6 +271,9 @@ location_name                                                   St. Louis, MO
 location_state                                                             MO
 location_type                                                            Town
 duration_days                                                              49
+duration_median                                                    1484986079
+year                                                                       17
+month                                                                      01
 divergence                                                              -8472
 goal_exceeded                                                           False
 Name: 0, dtype: object
@@ -282,31 +285,34 @@ Name: 0, dtype: object
   - converted_pledged_amount            used
   - goal                used
   - country             used
-  - staff_pick          used
+  - staff_pick          not used
   - spotlight           used
-  - launched_at                 used
-  - deadline            used
+  - launched_at                 not used
+  - deadline            not used
   - cat_id              used
-  - cat_name            used
+  - cat_name            not used
   - subcat_name                 used
   - pos                 used
   - parent_id           used
   - person_id           used
-  - person_name                 used
+  - person_name                 not used
   - location_id                 used
-  - location_name               used
+  - location_name               not used
   - location_state              used
   - location_type               used
   - duration_days               used
+  - duration_median             not used
+  - year                used
+  - month               used
   - goal_exceeded               used
   - divergence          not used
 
 =============================== DATASET SIZE ================================
 
-> Full useable / imported dataset:  (196491, 25)  /  (212378, 25)
-> Used dataset slice:  (49123, 21)  =  25.0 %   (as defined by user argument)
-> Testset:       (14737, 21)
-> Trainingset:   (34386, 21)
+> Full useable / imported dataset:  (196491, 28)  /  (212378, 28)
+> Used dataset slice:  (49123, 17)  =  25.0 %   (as defined by user argument)
+> Testset:       (14737, 17)
+> Trainingset:   (34386, 17)
 > Split ratio:   0.3 / 0.7
 
 > Normalizing datasets with  l2
@@ -316,70 +322,68 @@ Name: 0, dtype: object
 C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\ensemble\forest.py:245: FutureWarning: The default value of n_estimators will change from 10 in version 0.20 to 100 in 0.22.
   "10 in version 0.20 to 100 in 0.22.", FutureWarning)
 > ExtraTrees : Fitting... Predicting...
-         {'Model': 'ExtraTrees', 'Accuracy': 0.8780620207640633, 'F1-Score': 0.9011279229711142, 'Precision': 0.9040627069993376, 'Recall': 0.8982121311835033, 'MSE': 0.12193797923593676}
+         {'Model': 'ExtraTrees', 'Accuracy': 0.999389292257583, 'F1-Score': 0.999505793201911, 'Precision': 0.9993411661359394, 'Recall': 0.999670474516696, 'MSE': 0.0006107077424170455}
 
 > RandomForest : Fitting... Predicting...
-         {'Model': 'RandomForest', 'Accuracy': 0.6198683585533012, 'F1-Score': 0.7649181703734789, 'Precision': 0.6194521851423911, 'Recall': 0.9996709443896018, 'MSE': 0.3801316414466988}
+         {'Model': 'RandomForest', 'Accuracy': 0.9998642871683517, 'F1-Score': 0.9998901461056795, 'Precision': 1.0, 'Recall': 0.999780316344464, 'MSE': 0.00013571283164823234}
 
 > AdaBoost : Fitting... Predicting...
-         {'Model': 'AdaBoost', 'Accuracy': 0.6552215511976658, 'F1-Score': 0.7800337676955711, 'Precision': 0.6443284222571878, 'Recall': 0.9881539980256664, 'MSE': 0.34477844880233427}
+         {'Model': 'AdaBoost', 'Accuracy': 0.9999321435841759, 'F1-Score': 0.9999450760696437, 'Precision': 1.0, 'Recall': 0.999890158172232, 'MSE': 6.785641582411617e-05} 
 
 > DecisionTree : Fitting... Predicting...
-         {'Model': 'DecisionTree', 'Accuracy': 0.6601750695528262, 'F1-Score': 0.7810231744643638, 'Precision': 0.6493855885988512, 'Recall': 0.9795985521553142, 'MSE': 0.33982493044717377}
+         {'Model': 'DecisionTree', 'Accuracy': 0.9999321435841759, 'F1-Score': 0.9999450760696437, 'Precision': 1.0, 'Recall': 0.999890158172232, 'MSE': 6.785641582411617e-05}
 
 > NearestNeighbors : Fitting... Predicting...
-         {'Model': 'NearestNeighbors', 'Accuracy': 0.5715545904865305, 'F1-Score': 0.6777584974992344, 'Precision': 0.6337692087429607, 'Recall': 0.7283097510145882, 'MSE': 0.4284454095134695}
+         {'Model': 'NearestNeighbors', 'Accuracy': 0.9675646332360724, 'F1-Score': 0.9737478031634447, 'Precision': 0.9737478031634447, 'Recall': 0.9737478031634447, 'MSE': 0.03243536676392753}
 
 > LinearSVM : Fitting... Predicting...
-         {'Model': 'LinearSVM', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'LinearSVM', 'Accuracy': 0.7747166994639343, 'F1-Score': 0.8426689413325752, 'Precision': 0.741040173362227, 'Recall': 0.976603690685413, 'MSE': 0.22528330053606568}
 
 > RBF_SVM : Fitting... Predicting...
-         {'Model': 'RBF_SVM', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'RBF_SVM', 'Accuracy': 0.8239804573522427, 'F1-Score': 0.8724555020159307, 'Precision': 0.7897454157023323, 'Recall': 0.9745166959578208, 'MSE': 0.17601954264775735}
 
 > Nu_SVM : Fitting... Predicting...
-         {'Model': 'Nu_SVM', 'Accuracy': 0.4904661735767117, 'F1-Score': 0.5403684887066169, 'Precision': 0.6113573407202216, 'Recall': 0.48415048809915545, 'MSE': 0.5095338264232884}
+         {'Model': 'Nu_SVM', 'Accuracy': 0.8016556965461085, 'F1-Score': 0.8586762075134169, 'Precision': 0.7669056049745229, 'Recall': 0.9753954305799648, 'MSE': 0.19834430345389156}
 
 > NeuralNet : Fitting... Predicting...
-         {'Model': 'NeuralNet', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'NeuralNet', 'Accuracy': 0.8520730135034268, 'F1-Score': 0.8904742765273311, 'Precision': 0.8205555555555556, 'Recall': 0.9734182776801406, 'MSE': 0.14792698649657324}
 
 C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:432: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.
   FutureWarning)
 > LogisticRegression : Fitting... Predicting...
-         {'Model': 'LogisticRegression', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'LogisticRegression', 'Accuracy': 0.8872226369003189, 'F1-Score': 0.9134465159879179, 'Precision': 0.8684888096652803, 'Recall': 0.9633128295254832, 'MSE': 0.11277736309968107}
 
 C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\discriminant_analysis.py:693: UserWarning: Variables are collinear
   warnings.warn("Variables are collinear")
 > QDA : Fitting... Predicting...
-         {'Model': 'QDA', 'Accuracy': 0.9897536812105585, 'F1-Score': 0.9917867827032908, 'Precision': 0.98370738023306, 'Recall': 1.0, 'MSE': 0.010246318789441542}
+         {'Model': 'QDA', 'Accuracy': 0.6230576100970346, 'F1-Score': 0.766233219711316, 'Precision': 0.6210519135002388, 'Recall': 1.0, 'MSE': 0.3769423899029653}
 
-C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\discriminant_analysis.py:388: UserWarning: Variables are collinear.
-  warnings.warn("Variables are collinear.")
 > LDA : Fitting... Predicting...
-         {'Model': 'LDA', 'Accuracy': 1.0, 'F1-Score': 1.0, 'Precision': 1.0, 'Recall': 1.0, 'MSE': 0.0}
+         {'Model': 'LDA', 'Accuracy': 0.9002510687385492, 'F1-Score': 0.9242189916486236, 'Precision': 0.8707985234116962, 'Recall': 0.9846221441124781, 'MSE': 0.09974893126145078}
 
 > NaiveBayes : Fitting... Predicting...
-         {'Model': 'NaiveBayes', 'Accuracy': 0.6293004003528534, 'F1-Score': 0.7313234643190872, 'Precision': 0.6628922967189729, 'Recall': 0.8155094877700998, 'MSE': 0.37069959964714666}
+         {'Model': 'NaiveBayes', 'Accuracy': 0.7400420709778109, 'F1-Score': 0.7372608188738771, 'Precision': 0.981376666058061, 'Recall': 0.5903998242530756, 'MSE': 0.25995792902218906}
 
 > GradientBoosting : Fitting... Predicting...
-         {'Model': 'GradientBoosting', 'Accuracy': 0.6920675849901609, 'F1-Score': 0.7987226115497207, 'Precision': 0.6704892397051158, 'Recall': 0.9876055720083361, 'MSE': 0.3079324150098392}
+         {'Model': 'GradientBoosting', 'Accuracy': 0.9999321435841759, 'F1-Score': 0.9999450760696437, 'Precision': 1.0, 'Recall': 0.999890158172232, 'MSE': 6.785641582411617e-05}
 
 > RadiusNeighborsClassifier : Fitting... Predicting...
-         {'Model': 'RadiusNeighborsClassifier', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'RadiusNeighborsClassifier', 'Accuracy': 0.6473502069620682, 'F1-Score': 0.776789932568827, 'Precision': 0.6377741730728542, 'Recall': 0.9932996485061512, 'MSE': 0.35264979303793176}
 
 > SGDClassifier : Fitting... Predicting...
-         {'Model': 'SGDClassifier', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'SGDClassifier', 'Accuracy': 0.8368731763588247, 'F1-Score': 0.8807184677979557, 'Precision': 0.8031674208144797, 'Recall': 0.9748462214411248, 'MSE': 0.16312682364117528}
 
 > RidgeClassifierCV : Fitting... Predicting...
-         {'Model': 'RidgeClassifierCV', 'Accuracy': 0.6183755174051706, 'F1-Score': 0.7641533171181749, 'Precision': 0.6185755991581234, 'Recall': 0.9993418887792037, 'MSE': 0.38162448259482934}
+         {'Model': 'RidgeClassifierCV', 'Accuracy': 0.7659632218226233, 'F1-Score': 0.8373956909150913, 'Precision': 0.7335425786734947, 'Recall': 0.9755052724077329, 'MSE': 0.23403677817737667}
 
 > RidgeClassifier : Fitting... Predicting...
-         {'Model': 'RidgeClassifier', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'RidgeClassifier', 'Accuracy': 0.7624346881997693, 'F1-Score': 0.8355334241555878, 'Precision': 0.7299515718624312, 'Recall': 0.976823374340949, 'MSE': 0.23756531180023072}
 
 > PassiveAggressiveClassifier : Fitting... Predicting...
-         {'Model': 'PassiveAggressiveClassifier', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'PassiveAggressiveClassifier', 'Accuracy': 0.8796227183280179, 'F1-Score': 0.9089415871060467, 'Precision': 0.8531508961264213, 'Recall': 0.9725395430579965, 'MSE': 0.12037728167198208}
 
 > BaggingClassifier : Fitting... Predicting...
-         {'Model': 'BaggingClassifier', 'Accuracy': 0.9476148469837823, 'F1-Score': 0.9578694608164157, 'Precision': 0.9531877918974693, 'Recall': 0.9625973456180761, 'MSE': 0.052385153016217684}
+         {'Model': 'BaggingClassifier', 'Accuracy': 0.9998642871683517, 'F1-Score': 0.9998901461056795, 'Precision': 1.0, 'Recall': 0.999780316344464, 'MSE': 0.00013571283164823234}
 
 > BernoulliNB : Fitting... Predicting...
          {'Model': 'BernoulliNB', 'Accuracy': 1.0, 'F1-Score': 1.0, 'Precision': 1.0, 'Recall': 1.0, 'MSE': 0.0}
@@ -387,123 +391,133 @@ C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\discriminant_analysis.p
 C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\model_selection\_split.py:1978: FutureWarning: The default value of cv will change from 3 to 5 in version 0.22. Specify it explicitly to silence this warning.
   warnings.warn(CV_WARNING, FutureWarning)
 > CalibratedClassifierCV : Fitting... Predicting...
-         {'Model': 'CalibratedClassifierCV', 'Accuracy': 0.6179683789102259, 'F1-Score': 0.7637630077207117, 'Precision': 0.618484539585457, 'Recall': 0.9982450367445431, 'MSE': 0.38203162108977406}
+         {'Model': 'CalibratedClassifierCV', 'Accuracy': 0.8758906154576915, 'F1-Score': 0.9054340520138565, 'Precision': 0.8553287095828856, 'Recall': 0.9617750439367311, 'MSE': 0.12410938454230848}
 
 > LabelPropagation : Fitting... Predicting...
-         {'Model': 'LabelPropagation', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'LabelPropagation', 'Accuracy': 0.7318314446630929, 'F1-Score': 0.8186490455212921, 'Precision': 0.7030264817150063, 'Recall': 0.9797891036906854, 'MSE': 0.2681685553369071}
 
 > LabelSpreading : Fitting... Predicting...
-         {'Model': 'LabelSpreading', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'LabelSpreading', 'Accuracy': 0.7270136391395806, 'F1-Score': 0.8160746125360033, 'Precision': 0.6989584149111129, 'Recall': 0.9803383128295254, 'MSE': 0.27298636086041933}
 
 > LinearSVC : Fitting... Predicting...
-         {'Model': 'LinearSVC', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'LinearSVC', 'Accuracy': 0.8712085227658275, 'F1-Score': 0.9024164524421594, 'Precision': 0.848250531606418, 'Recall': 0.9639718804920914, 'MSE': 0.1287914772341725}
 
 C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\model_selection\_split.py:1978: FutureWarning: The default value of cv will change from 3 to 5 in version 0.22. Specify it explicitly to silence this warning.
   warnings.warn(CV_WARNING, FutureWarning)
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:947: ConvergenceWarning: lbfgs failed to converge. Increase the number of iterations.
+  "of iterations.", ConvergenceWarning)
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:947: ConvergenceWarning: lbfgs failed to converge. Increase the number of iterations.
+  "of iterations.", ConvergenceWarning)
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:947: ConvergenceWarning: lbfgs failed to converge. Increase the number of iterations.
+  "of iterations.", ConvergenceWarning)
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:947: ConvergenceWarning: lbfgs failed to converge. Increase the number of iterations.
+  "of iterations.", ConvergenceWarning)
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:947: ConvergenceWarning: lbfgs failed to converge. Increase the number of iterations.
+  "of iterations.", ConvergenceWarning)
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:947: ConvergenceWarning: lbfgs failed to converge. Increase the number of iterations.
+  "of iterations.", ConvergenceWarning)
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:947: ConvergenceWarning: lbfgs failed to converge. Increase the number of iterations.
+  "of iterations.", ConvergenceWarning)
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:947: ConvergenceWarning: lbfgs failed to converge. Increase the number of iterations.
+  "of iterations.", ConvergenceWarning)
+C:\Users\Julius\.conda\envs\ML\lib\site-packages\sklearn\linear_model\logistic.py:947: ConvergenceWarning: lbfgs failed to converge. Increase the number of iterations.
+  "of iterations.", ConvergenceWarning)
 > LogisticRegressionCV : Fitting... Predicting...
-         {'Model': 'LogisticRegressionCV', 'Accuracy': 0.6383253036574608, 'F1-Score': 0.761585256754339, 'Precision': 0.6430243976131128, 'Recall': 0.9337501371065043, 'MSE': 0.3616746963425392}
+         {'Model': 'LogisticRegressionCV', 'Accuracy': 0.9133473569926036, 'F1-Score': 0.9313920378230269, 'Precision': 0.9115574718687559, 'Recall': 0.9521089630931459, 'MSE': 0.08665264300739635}
 
 > MultinomialNB : Fitting... Predicting...
-         {'Model': 'MultinomialNB', 'Accuracy': 0.6186469430684671, 'F1-Score': 0.7644001006120567, 'Precision': 0.6186469430684671, 'Recall': 1.0, 'MSE': 0.3813530569315329}
+         {'Model': 'MultinomialNB', 'Accuracy': 0.6782927325778653, 'F1-Score': 0.7923437431562349, 'Precision': 0.658920375901508, 'Recall': 0.9935193321616872, 'MSE': 0.3217072674221348}
 
 > NearestCentroid : Fitting... Predicting...
-         {'Model': 'NearestCentroid', 'Accuracy': 0.49290900454637987, 'F1-Score': 0.536730518876697, 'Precision': 0.6171941830624466, 'Recall': 0.47482724580454094, 'MSE': 0.5070909954536201}
+         {'Model': 'NearestCentroid', 'Accuracy': 0.7995521476555608, 'F1-Score': 0.8568659753852117, 'Precision': 0.7666030865267903, 'Recall': 0.9712214411247804, 'MSE': 0.20044785234443915}
 
 > Perceptron : Fitting... Predicting...
-         {'Model': 'Perceptron', 'Accuracy': 0.6179005224944019, 'F1-Score': 0.7628952798012548, 'Precision': 0.61912247129579, 'Recall': 0.993638258198969, 'MSE': 0.38209947750559814}
+         {'Model': 'Perceptron', 'Accuracy': 0.7627739702788898, 'F1-Score': 0.8363755499391556, 'Precision': 0.7286739520469744, 'Recall': 0.9814367311072056, 'MSE': 0.23722602972111012}
 
 
 ============================== FEATURE RANKING ==============================
 
 > Table containing importance of every feature with different classifiers:
 
-                  backers_count  converted_pledged_amount  goal   country  staff_pick  spotlight  launched_at  deadline    cat_id  cat_name  subcat_name  pos  parent_id  person_id  person_name  location_id  location_name  location_state  location_type  duration_days  goal_exceeded
-ExtraTrees               0.0000                       0.0   0.0  0.000000    0.076517   0.064951     0.067809  0.064548  0.032908   0.00000     0.096169  0.0   0.127013   0.000000     0.070969     0.062658       0.000000        0.000000       0.270812       0.000000       0.065646
-RandomForest             0.0371                       0.0   0.0  0.000000    0.000365   0.061325     0.000000  0.139857  0.000000   0.00000     0.055020  0.0   0.259545   0.127326     0.074737     0.000000       0.005853        0.000000       0.213143       0.000000       0.025730
-AdaBoost                 0.0000                       0.0   0.0  0.000000    0.000000   0.000000     0.000000  0.000000  0.000000   0.10000     0.000000  0.0   0.000000   0.020000     0.400000     0.000000       0.000000        0.120000       0.240000       0.100000       0.020000
-DecisionTree             0.0000                       0.0   0.0  0.000608    0.000000   0.000000     0.000000  0.000000  0.000000   0.00000     0.000000  0.0   0.000000   0.000000     0.000000     0.000000       0.000000        0.325892       0.604490       0.017833       0.051176
-GradientBoosting         0.0000                       0.0   0.0  0.000000    0.000000   0.000000     0.000000  0.000532  0.017782   0.01871     0.000000  0.0   0.000000   0.004508     0.072508     0.000000       0.003184        0.434290       0.448487       0.000000       0.000000
+                  backers_count  converted_pledged_amount      goal   country  spotlight    cat_id  subcat_name       pos  parent_id  person_id  location_id  location_state  location_type  duration_days      year     month  goal_exceeded
+ExtraTrees             0.006748                  0.002551  0.003823  0.007506   0.002227  0.011098     0.009537  0.093376   0.003134   0.003352     0.005471        0.237708       0.009332       0.001824  0.092181  0.219406       0.290728
+RandomForest           0.001502                  0.002002  0.001772  0.028843   0.245349  0.002360     0.004225  0.003037   0.003276   0.004359     0.002916        0.123638       0.001648       0.051274  0.517758  0.005785       0.000256
+AdaBoost               0.000000                  0.000000  0.000000  0.000000   0.000000  0.000000     0.000000  0.000000   0.000000   0.200000     0.500000        0.000000       0.000000       0.000000  0.000000  0.000000       0.300000
+DecisionTree           0.000000                  0.000000  0.000000  0.000000   0.000000  0.000000     0.000000  0.000000   0.000000   0.000000     0.000123        0.999877       0.000000       0.000000  0.000000  0.000000       0.000000
+GradientBoosting       0.000000                  0.000000  0.000000  0.000000   0.000000  0.000000     0.000000  0.000000   0.000000   0.000041     0.999877        0.000000       0.000000       0.000000  0.000000  0.000000       0.000082
 
 > Features with highest importance with different classifiers:
                           Importance
-location_type               1.776932
-location_state              0.880182
-person_name                 0.618214
-parent_id                   0.386557
-deadline                    0.204937
-goal_exceeded               0.162553
-person_id                   0.151835
-subcat_name                 0.151188
-spotlight                   0.126276
-cat_name                    0.118710
-duration_days               0.117833
-staff_pick                  0.076882
-launched_at                 0.067809
-location_id                 0.062658
-cat_id                      0.050690
-backers_count               0.037100
-location_name               0.009036
-country                     0.000608
-converted_pledged_amount    0.000000
-pos                         0.000000
-goal                        0.000000
+location_id                 1.508387
+location_state              1.361224
+year                        0.609939
+goal_exceeded               0.591067
+spotlight                   0.247576
+month                       0.225190
+person_id                   0.207751
+pos                         0.096414
+duration_days               0.053098
+country                     0.036348
+subcat_name                 0.013762
+cat_id                      0.013458
+location_type               0.010979
+backers_count               0.008251
+parent_id                   0.006409
+goal                        0.005595
+converted_pledged_amount    0.004553
 
 
 > Univariate automatic feature selection:  Applying SelectKBest class to extract top best features:
                      Feature         Score
 2                       goal  6.903619e+09
-15               location_id  1.757067e+09
-6                launched_at  1.458168e+09
 1   converted_pledged_amount  1.422067e+09
-7                   deadline  1.314653e+09
-13                 person_id  8.170944e+07
+8                  parent_id  1.709615e+07
 0              backers_count  1.605708e+07
-8                     cat_id  1.734930e+06
-5                  spotlight  7.554100e+04
-20             goal_exceeded  7.030779e+04
-14               person_name  3.971712e+04
-10               subcat_name  3.692785e+04
-19             duration_days  2.175141e+04
-4                 staff_pick  9.948290e+03
-12                 parent_id  7.038880e+03
-16             location_name  5.238382e+03
-9                   cat_name  9.252293e+02
+5                     cat_id  5.676183e+05
+4                  spotlight  7.554100e+04
+16             goal_exceeded  7.030779e+04
+6                subcat_name  3.692785e+04
+13             duration_days  2.175141e+04
+9                  person_id  5.690420e+03
+10               location_id  2.876645e+03
 3                    country  3.897557e+02
-11                       pos  1.501928e+02
-18             location_type  4.964885e+01
-17            location_state  5.109210e+00
+14                      year  3.274183e+02
+15                     month  1.685910e+02
+7                        pos  1.501928e+02
+12             location_type  4.964885e+01
+11            location_state  5.109210e+00
 
 ========================== PREDICTION MODEL RANKING ==========================
 
                           Model  Accuracy  F1-Score  Precision    Recall       MSE
-11                          LDA  1.000000  1.000000   1.000000  1.000000  0.000000
 20                  BernoulliNB  1.000000  1.000000   1.000000  1.000000  0.000000
-10                          QDA  0.989754  0.991787   0.983707  1.000000  0.010246
-19            BaggingClassifier  0.947615  0.957869   0.953188  0.962597  0.052385
-0                    ExtraTrees  0.878062  0.901128   0.904063  0.898212  0.121938
-13             GradientBoosting  0.692068  0.798723   0.670489  0.987606  0.307932
-3                  DecisionTree  0.660175  0.781023   0.649386  0.979599  0.339825
-2                      AdaBoost  0.655222  0.780034   0.644328  0.988154  0.344778
-25         LogisticRegressionCV  0.638325  0.761585   0.643024  0.933750  0.361675
-12                   NaiveBayes  0.629300  0.731323   0.662892  0.815509  0.370700
-1                  RandomForest  0.619868  0.764918   0.619452  0.999671  0.380132
-5                     LinearSVM  0.618647  0.764400   0.618647  1.000000  0.381353
-6                       RBF_SVM  0.618647  0.764400   0.618647  1.000000  0.381353
-8                     NeuralNet  0.618647  0.764400   0.618647  1.000000  0.381353
-9            LogisticRegression  0.618647  0.764400   0.618647  1.000000  0.381353
-14    RadiusNeighborsClassifier  0.618647  0.764400   0.618647  1.000000  0.381353
-15                SGDClassifier  0.618647  0.764400   0.618647  1.000000  0.381353
-17              RidgeClassifier  0.618647  0.764400   0.618647  1.000000  0.381353
-18  PassiveAggressiveClassifier  0.618647  0.764400   0.618647  1.000000  0.381353
-22             LabelPropagation  0.618647  0.764400   0.618647  1.000000  0.381353
-23               LabelSpreading  0.618647  0.764400   0.618647  1.000000  0.381353
-24                    LinearSVC  0.618647  0.764400   0.618647  1.000000  0.381353
-26                MultinomialNB  0.618647  0.764400   0.618647  1.000000  0.381353
-16            RidgeClassifierCV  0.618376  0.764153   0.618576  0.999342  0.381624
-21       CalibratedClassifierCV  0.617968  0.763763   0.618485  0.998245  0.382032
-28                   Perceptron  0.617901  0.762895   0.619122  0.993638  0.382099
-4              NearestNeighbors  0.571555  0.677758   0.633769  0.728310  0.428445
-27              NearestCentroid  0.492909  0.536731   0.617194  0.474827  0.507091
-7                        Nu_SVM  0.490466  0.540368   0.611357  0.484150  0.509534
+2                      AdaBoost  0.999932  0.999945   1.000000  0.999890  0.000068
+3                  DecisionTree  0.999932  0.999945   1.000000  0.999890  0.000068
+13             GradientBoosting  0.999932  0.999945   1.000000  0.999890  0.000068
+1                  RandomForest  0.999864  0.999890   1.000000  0.999780  0.000136
+19            BaggingClassifier  0.999864  0.999890   1.000000  0.999780  0.000136
+0                    ExtraTrees  0.999389  0.999506   0.999341  0.999670  0.000611
+4              NearestNeighbors  0.967565  0.973748   0.973748  0.973748  0.032435
+25         LogisticRegressionCV  0.913347  0.931392   0.911557  0.952109  0.086653
+11                          LDA  0.900251  0.924219   0.870799  0.984622  0.099749
+9            LogisticRegression  0.887223  0.913447   0.868489  0.963313  0.112777
+18  PassiveAggressiveClassifier  0.879623  0.908942   0.853151  0.972540  0.120377
+21       CalibratedClassifierCV  0.875891  0.905434   0.855329  0.961775  0.124109
+24                    LinearSVC  0.871209  0.902416   0.848251  0.963972  0.128791
+8                     NeuralNet  0.852073  0.890474   0.820556  0.973418  0.147927
+15                SGDClassifier  0.836873  0.880718   0.803167  0.974846  0.163127
+6                       RBF_SVM  0.823980  0.872456   0.789745  0.974517  0.176020
+7                        Nu_SVM  0.801656  0.858676   0.766906  0.975395  0.198344
+27              NearestCentroid  0.799552  0.856866   0.766603  0.971221  0.200448
+5                     LinearSVM  0.774717  0.842669   0.741040  0.976604  0.225283
+16            RidgeClassifierCV  0.765963  0.837396   0.733543  0.975505  0.234037
+28                   Perceptron  0.762774  0.836376   0.728674  0.981437  0.237226
+17              RidgeClassifier  0.762435  0.835533   0.729952  0.976823  0.237565
+12                   NaiveBayes  0.740042  0.737261   0.981377  0.590400  0.259958
+22             LabelPropagation  0.731831  0.818649   0.703026  0.979789  0.268169
+23               LabelSpreading  0.727014  0.816075   0.698958  0.980338  0.272986
+26                MultinomialNB  0.678293  0.792344   0.658920  0.993519  0.321707
+14    RadiusNeighborsClassifier  0.647350  0.776790   0.637774  0.993300  0.352650
+10                          QDA  0.623058  0.766233   0.621052  1.000000  0.376942
 
 =============================================================================

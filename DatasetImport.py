@@ -140,21 +140,29 @@ class DatasetImport:
                             location_type.append(np.NaN)
 
 
-                    # c) Calculating campaign duration_days:
-                    duration_days = []; divergence = []; goal_exceeded = []
+                    # c) Calculating campaign times & differences:
+                    duration_days = []; duration_median = []; year = []; month = []; divergence = []; goal_exceeded = []
 
                     for index, row in data.iterrows():
                         launched_at = row['launched_at']
                         deadline = row['deadline']
-                        # Calculating time differece in days:
-                        difference = int(round((float(deadline)-float(launched_at))/(60*60*24)))
-                        duration_days.append(difference)
-                        #print('launched at:',datetime.utcfromtimestamp(launched_at).strftime('%d-%m-%y'), '- deadline:',datetime.utcfromtimestamp(deadline).strftime('%d-%m-%y'), '- difference in days:',difference)
+                        # a) Calculating time differece in days:
+                        difference = float(deadline)-float(launched_at)
+                        # b) Calculating the time median (=middle of the campaign time frame) to estimate year and month:
+                        median = launched_at + (difference / 2)
+                        difference_days = int(round(difference/(60*60*24)))
+                        duration_days.append(difference_days)
+                        duration_median.append(int(round(median)))
+                        # c) Extracting the year of the median:
+                        year.append(datetime.utcfromtimestamp(median).strftime('%y'))
+                        # d) Extracting the month of the median:
+                        month.append(datetime.utcfromtimestamp(median).strftime('%m'))
+
+                        #print('launched at:',datetime.utcfromtimestamp(launched_at).strftime('%d-%m-%y'), '- deadline:',datetime.utcfromtimestamp(deadline).strftime('%d-%m-%y'), '- difference in days:',difference_days, '- median:', datetime.utcfromtimestamp(median).strftime('%d-%m-%y'), '- year:', datetime.utcfromtimestamp(median).strftime('%y'), '- month:', datetime.utcfromtimestamp(median).strftime('%m') )
 
                         # Calculating divergence between pledged money and goal:
                         # divergence measeures the divergence value of pledged from goal in USD and can be positive or negative
                         # goal_exceeded is True if pledged money exceeds the goal
-
                         div = float(row['converted_pledged_amount']) - float(row['goal'])
                         divergence.append(div)
 
@@ -163,16 +171,13 @@ class DatasetImport:
                         else:
                             goal_exceeded.append(False)
 
-
                 # Assigning all in previous steps a), b), c) retrieved data fields to dataframe:
-                data = data.assign( cat_id = cat_id, cat_name = cat_name, subcat_name = subcat_name, pos = pos, parent_id = parent_id, person_id = person_id, person_name = person_name, location_id = location_id, location_name = location_name, location_state = location_state, location_type = location_type, duration_days = duration_days, divergence = divergence, goal_exceeded = goal_exceeded)
-
+                data = data.assign(cat_id = cat_id, cat_name = cat_name, subcat_name = subcat_name, pos = pos, parent_id = parent_id, person_id = person_id, person_name = person_name, location_id = location_id, location_name = location_name, location_state = location_state, location_type = location_type, duration_days = duration_days, duration_median = duration_median, year = year, month = month, divergence = divergence, goal_exceeded = goal_exceeded)
                 # Rearranging column sequence:
-                columns = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration_days', 'divergence', 'goal_exceeded']
-
+                columns = ['state', 'id', 'name', 'backers_count', 'converted_pledged_amount', 'goal', 'country', 'staff_pick', 'spotlight', 'launched_at', 'deadline', 'cat_id', 'cat_name', 'subcat_name', 'pos', 'parent_id', 'person_id', 'person_name', 'location_id', 'location_name', 'location_state', 'location_type', 'duration_days', 'duration_median', 'year', 'month', 'divergence', 'goal_exceeded']
                 data = data[columns]
+
                 all_data = all_data.append(data)
-                #all_data = data
 
             else:
                 continue

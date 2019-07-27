@@ -3,8 +3,8 @@
 #
 # SFIR assignement: predicting campaign success on kickstarter using ML
 # @author:   Julius Steidl
-# date:     25.07.2019
-# version:  1.8
+# date:     27.07.2019
+# version:  1.9
 # NOTE:     folder with .csv files is required:  ./Kickstarter_2019-07-18T03_20_05_009Z/
 #           source:  https://s3.amazonaws.com/weruns/forfun/Kickstarter/Kickstarter_2019-07-18T03_20_05_009Z.zip
 
@@ -92,42 +92,42 @@ normtype = 'l2'#'l1'
 # model_selection is used for manually enabling the individual models.
 # NOTE:  Setting boolean value, eanbles/disables model.
 model_selection = {
-	'ExtraTrees': ( True, ExtraTreesClassifier() ),
-	'RandomForest': ( True, RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1) ),
-	'AdaBoost': ( True, AdaBoostClassifier() ),
-	'DecisionTree': ( True, DecisionTreeClassifier(max_depth=5) ),
-	'NearestNeighbors': (True, KNeighborsClassifier(n_neighbors=5) ), # (n_neighbors=4) ),
-	'LinearSVM': ( True, SVC(kernel="linear", C=0.025) ),  # (C=0.01, penalty="l1", dual=False) ),
-	'RBF_SVM': (True, SVC(gamma='auto') ),#gamma=2, C=1) ), #
-	'Nu_SVM': (True, NuSVC(gamma='auto') ),
-	'GaussianProcess': (False, GaussianProcessClassifier() ), #(1.0 * RBF(1.0)) ),
-	'NeuralNet': (True, MLPClassifier(alpha=1, max_iter=1000) ),
-	'LogisticRegression': (True, LogisticRegression() ),
-	'QDA': (True, QuadraticDiscriminantAnalysis() ),
-	'LDA': (True, LinearDiscriminantAnalysis() ),
-	'NaiveBayes': (True,  GaussianNB() ),
-	'GradientBoosting': (True, GradientBoostingClassifier() ),
-	'RadiusNeighborsClassifier': (True, RadiusNeighborsClassifier() ),
-	'SGDClassifier': (True, SGDClassifier() ),
-	'RidgeClassifierCV': (True, RidgeClassifierCV() ),
-	'RidgeClassifier': (True, RidgeClassifier() ),
-	'PassiveAggressiveClassifier': (True, PassiveAggressiveClassifier() ),
-	'BaggingClassifier': (True, BaggingClassifier() ),
-	'BernoulliNB': (True, BernoulliNB() ),
-	'CalibratedClassifierCV': (True, CalibratedClassifierCV() ),
-	'LabelPropagation': (True, LabelPropagation() ),
-	'LabelSpreading': (True, LabelSpreading() ),
-	'LinearSVC': (True, LinearSVC() ),
-	'LogisticRegressionCV': (True, LogisticRegressionCV() ),
-	'MultinomialNB': (True, MultinomialNB() ),
-	'NearestCentroid': (True, NearestCentroid() ),
-	'Perceptron': (True, Perceptron() ),
-	#'OneClassSVM': (True, OneClassSVM() ),
-	#'ClassifierChain': (True, ClassifierChain() ),
-	#'MultiOutputClassifier': (True, MultiOutputClassifier() ),
-	#'OutputCodeClassifier': (True, OutputCodeClassifier() ),
-	#'OneVsOneClassifier': (True, OneVsOneClassifier() ),
-	#'OneVsRestClassifier': (True, OneVsRestClassifier() ),
+    'ExtraTrees': ( True, ExtraTreesClassifier() ),
+    'RandomForest': ( True, RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1) ),
+    'AdaBoost': ( True, AdaBoostClassifier() ),
+    'DecisionTree': ( True, DecisionTreeClassifier(max_depth=5) ),
+    'NearestNeighbors': (True, KNeighborsClassifier(n_neighbors=5) ), # (n_neighbors=4) ),
+    'LinearSVM': ( True, SVC(kernel="linear", C=0.025) ),  # (C=0.01, penalty="l1", dual=False) ),
+    'RBF_SVM': (True, SVC(gamma='auto') ),#gamma=2, C=1) ), #
+    'Nu_SVM': (True, NuSVC(gamma='auto') ),
+    'GaussianProcess': (False, GaussianProcessClassifier() ), #(1.0 * RBF(1.0)) ),
+    'NeuralNet': (True, MLPClassifier(alpha=1, max_iter=1000) ),
+    'LogisticRegression': (True, LogisticRegression() ),
+    'QDA': (True, QuadraticDiscriminantAnalysis() ),
+    'LDA': (True, LinearDiscriminantAnalysis() ),
+    'NaiveBayes': (True,  GaussianNB() ),
+    'GradientBoosting': (True, GradientBoostingClassifier() ),
+    'RadiusNeighborsClassifier': (True, RadiusNeighborsClassifier() ),
+    'SGDClassifier': (True, SGDClassifier() ),
+    'RidgeClassifierCV': (True, RidgeClassifierCV() ),
+    'RidgeClassifier': (True, RidgeClassifier() ),
+    'PassiveAggressiveClassifier': (True, PassiveAggressiveClassifier() ),
+    'BaggingClassifier': (True, BaggingClassifier() ),
+    'BernoulliNB': (True, BernoulliNB() ),
+    'CalibratedClassifierCV': (True, CalibratedClassifierCV() ),
+    'LabelPropagation': (True, LabelPropagation() ),
+    'LabelSpreading': (True, LabelSpreading() ),
+    'LinearSVC': (True, LinearSVC() ),
+    'LogisticRegressionCV': (True, LogisticRegressionCV() ),
+    'MultinomialNB': (True, MultinomialNB() ),
+    'NearestCentroid': (True, NearestCentroid() ),
+    'Perceptron': (True, Perceptron() ),
+    #'OneClassSVM': (True, OneClassSVM() ),
+    #'ClassifierChain': (True, ClassifierChain() ),
+    #'MultiOutputClassifier': (True, MultiOutputClassifier() ),
+    #'OutputCodeClassifier': (True, OutputCodeClassifier() ),
+    #'OneVsOneClassifier': (True, OneVsOneClassifier() ),
+    #'OneVsRestClassifier': (True, OneVsRestClassifier() ),
 }
 
 
@@ -138,24 +138,27 @@ feature_set = {
     'converted_pledged_amount': True,
     'goal': True,
     'country': True,
-    'staff_pick': True,
+    'staff_pick': False,
     'spotlight': True,
-    'launched_at': True,
-    'deadline': True,
+    'launched_at': False,
+    'deadline': False,
     'cat_id': True,
-    'cat_name': True,
+    'cat_name': False,
     'subcat_name': True,
     'pos': True,
     'parent_id': True,
     'person_id': True,
-    'person_name': True,
+    'person_name': False,
     'location_id': True,
-    'location_name': True,
+    'location_name': False,
     'location_state': True,
     'location_type': True,
-    'duration_days': True,
-    'goal_exceeded': True,
-    'divergence': False # feature contains negative value!
+    'duration_days': True, # extracted feature
+    'duration_median': False, # extracted feature
+    'year': True, # extracted feature
+    'month': True, # extracted feature
+    'goal_exceeded': True, # extracted feature
+    'divergence': False # extracted feature, contains negative value!
 }
 # labels = ['state', 'id', 'name']
 
@@ -164,20 +167,20 @@ def handle_arguments(argv):
     skipimport = False; skipstats = False; slice_value = 1.0
 
     if len(argv[1:]) > 1:
-    	for arg in argv:
-    		if re.match('^\d\.\d+?$', arg) is not None:
-    			if float(arg) < 1.0 and float(arg) > 0.0:
-    				slice_value = float(arg)
-    				print('>>> Entered slice value:',slice_value)
-    			else:
-    				print('>>> Please enter a float value between 0.0 and 1.0 to determine the slice of the imported dataset beeing used >>>\n')
-    		# Skipping new dataset import and statistics generation:
-    		if arg in ['-skipall', 'skipall', '-skip', 'skip']:
-    			skipimport = True; skipstats = True
-    		elif arg in ['-skipimport', 'skipimport']:
-    			skipimport = True
-    		elif arg in ['-skipstats', 'skipstats', '-skipstatistics', 'skipstatistics']:
-    			skipstats = True
+        for arg in argv:
+            if re.match('^\d\.\d+?$', arg) is not None:
+                if float(arg) < 1.0 and float(arg) > 0.0:
+                    slice_value = float(arg)
+                    print('>>> Entered slice value:',slice_value)
+                else:
+                    print('>>> Please enter a float value between 0.0 and 1.0 to determine the slice of the imported dataset beeing used >>>\n')
+            # Skipping new dataset import and statistics generation:
+            if arg in ['-skipall', 'skipall', '-skip', 'skip']:
+                skipimport = True; skipstats = True
+            elif arg in ['-skipimport', 'skipimport']:
+                skipimport = True
+            elif arg in ['-skipstats', 'skipstats', '-skipstatistics', 'skipstatistics']:
+                skipstats = True
 
     return (skipimport, skipstats, slice_value)
 
@@ -248,7 +251,7 @@ def main():
     # Univariate automatic feature selection:
 
     # Applying SelectKBest class to extract top best features:
-    bestfeatures = SelectKBest(score_func=chi2, k=20)
+    bestfeatures = SelectKBest(score_func=chi2, k='all')
     fit = bestfeatures.fit(X, y)
 
     data_scores = pd.DataFrame(fit.scores_)
