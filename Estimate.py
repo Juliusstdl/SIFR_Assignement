@@ -82,12 +82,12 @@ class Estimate:
         for model_name, tupel in model_selection.items():
             active, model = tupel
             if active:
-                print('>',model_name,': Fitting... ', end = '')
+                #print('>',model_name,': Fitting... ', end = '')
 
                 model.fit(X_train, y_train)
 
                 # a) Get the predictions of the model from the data it has not seen (testing):
-                print('Predicting...')
+                #print('Predicting...')
                 y_pred_test = model.predict(X_test)
 
 
@@ -109,22 +109,10 @@ class Estimate:
 
                 results = { 'Model': model_name, 'Accuracy': accuracy, 'F1-Score': f1, 'Precision': precision, 'Recall': recall, 'MSE': mse }
 
-                print('\t',results,'\n')
+                #print('\t',results,'\n')
 
                 results_df = results_df.append(results , ignore_index=True )#, 'Score': score
 
-                '''
-                # All the metrics compare in some way how close are the predicted vs. the actual values:
-                error_metric = mean_squared_error(y_pred=y_pred_test.astype(np.float64), y_true=y_test.astype(np.float64))
-                #print('> The Mean Square Error of the',model_name,'-model is: ',error_metric,'\n')
-
-                # Cross Validation Classification Accuracy:
-                #seed = 7
-                #kfold = model_selection.KFold(n_splits=10, random_state=seed)
-                #scoring = 'accuracy'
-                #results = model_selection.cross_val_score(model, X, Y, cv=kfold, scoring=scoring)
-                #print("Accuracy: %.3f (%.3f)") % (results.mean(), results.std())
-                '''
 
                 # c) Get feature importances:
                 try:
@@ -140,12 +128,6 @@ class Estimate:
                 except:
                     #print(' -',model_name,'does not output any feature importances.')
                     continue
-
-
-            # Feature selection using SelectFromModel:
-            #cls_LSV = LinearSVC(C=0.01, penalty="l1", dual=False).fit(X, y)
-            #model = SelectFromModel(cls_LSV, prefit=True)
-            #X_train_new = model.transform(X_train)
 
 
         results_df = results_df.sort_values(['Accuracy','F1-Score'], ascending=False)

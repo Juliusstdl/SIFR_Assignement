@@ -27,6 +27,9 @@ class Preprocessing:
         bool_dict = {'successful': True,'failed': False}
         data['state'] = data['state'].map(bool_dict)
 
+        # Converting all negative divergence values to positives:
+        data['divergence'] = data['divergence'].abs()
+
         # Fill string fields containing NaN dummy-value with 'NaN' string required for labelencoder:
         values = {'subcat_name': 'NaN', 'location_name': 'NaN', 'location_state': 'NaN', 'location_type': 'NaN'}
         data = data.fillna(value=values)

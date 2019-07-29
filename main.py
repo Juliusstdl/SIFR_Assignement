@@ -3,8 +3,8 @@
 #
 # SFIR assignement: predicting campaign success on kickstarter using ML
 # @author:   Julius Steidl
-# date:     27.07.2019
-# version:  1.9
+# date:     29.07.2019
+# version:  2.0
 # NOTE:     folder with .csv files is required:  ./Kickstarter_2019-07-18T03_20_05_009Z/
 #           source:  https://s3.amazonaws.com/weruns/forfun/Kickstarter/Kickstarter_2019-07-18T03_20_05_009Z.zip
 
@@ -70,11 +70,7 @@ from sklearn.svm import NuSVC
 from sklearn.linear_model import Perceptron
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.svm import SVC
-#from sklearn.ensemble.voting_classifier import VotingClassifier
-#from sklearn.mixture import DPGMM
-#from sklearn.mixture import GMM
-#from sklearn.mixture import GaussianMixture
-#from sklearn.mixture import VBGMM
+
 
 # Muting the warning-messages:
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -83,8 +79,15 @@ pd.options.mode.chained_assignment = None  # default='warn'
 # NOTE:  Set 'directory'-string to name of the folder containing the .csv input files:
 directory = 'Kickstarter_2019-07-18T03_20_05_009Z'  # date: 2019-07-18
 
+
+# Filtering out entries (=campaigns) with 'canceled' or 'live' state values (as label).
+# => Just using 'successful' and 'failed' campaigns for estimation:
+state_filter = ['successful','failed'] #,'canceled', 'live']
+
+
 # NOTE:  Adjust Trainingset / Testset division ratio:
 divratio = 0.3
+
 
 # Normalization (L1 & L2):
 # NOTE:  Change 'normtype' value to 'l1' / 'l2' to change normalization type:
@@ -101,35 +104,29 @@ model_selection = {
     'GradientBoosting': (True, GradientBoostingClassifier(loss='deviance', learning_rate=0.1, n_estimators=100, subsample=1.0, criterion='friedman_mse', min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_depth=3, min_impurity_decrease=0.0, min_impurity_split=None, init=None, random_state=None, max_features=None, verbose=0, max_leaf_nodes=None, warm_start=False, presort='auto', validation_fraction=0.1, n_iter_no_change=None, tol=0.0001) ),
     'BernoulliNB': (True, BernoulliNB(alpha=1.0, binarize=0.0, fit_prior=True, class_prior=None) ),
     'BaggingClassifier': (True, BaggingClassifier(base_estimator=None, n_estimators=10, max_samples=1.0, max_features=1.0, bootstrap=True, bootstrap_features=False, oob_score=False, warm_start=False, n_jobs=None, random_state=None, verbose=0) ),
-    'NearestNeighbors': (True, KNeighborsClassifier(n_neighbors=5) ), # (n_neighbors=4) ),
+    'NearestNeighbors': (True, KNeighborsClassifier(n_neighbors=5, weights='uniform', algorithm='auto', leaf_size=30, p=2, metric='minkowski', metric_params=None, n_jobs=None) ), # (n_neighbors=4) ),
+    'LogisticRegressionCV': (True, LogisticRegressionCV(Cs=10, fit_intercept=True, cv='warn', dual=False, penalty='l2', scoring=None, solver='lbfgs', tol=0.0001, max_iter=100, class_weight=None, n_jobs=None, verbose=0, refit=True, intercept_scaling=1.0, multi_class='warn', random_state=None, l1_ratios=None) ),
+    'LDA': (True, LinearDiscriminantAnalysis(solver='svd', shrinkage=None, priors=None, n_components=None, store_covariance=False, tol=0.0001) ),
+    'LogisticRegression': (True, LogisticRegression(penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='warn', max_iter=100, multi_class='warn', verbose=0, warm_start=False, n_jobs=None, l1_ratio=None) ),
+    'CalibratedClassifierCV': (True, CalibratedClassifierCV(base_estimator=None, method='sigmoid', cv='warn') ),
+    'LinearSVC': (True, LinearSVC(penalty='l2', loss='squared_hinge', dual=True, tol=0.0001, C=1.0, multi_class='ovr', fit_intercept=True, intercept_scaling=1, class_weight=None, verbose=0, random_state=None, max_iter=1000) ),
     'LinearSVM': ( True, SVC(kernel='linear', C=0.025) ),  # (C=0.01, penalty='l1', dual=False) ),
     'RBF_SVM': (True, SVC(gamma='auto') ),#gamma=2, C=1) ), #
     'Nu_SVM': (True, NuSVC(gamma='auto') ),
     'GaussianProcess': (False, GaussianProcessClassifier() ), #(1.0 * RBF(1.0)) ),
     'NeuralNet': (True, MLPClassifier(alpha=1, max_iter=1000) ),
-    'LogisticRegression': (True, LogisticRegression() ),
     'QDA': (True, QuadraticDiscriminantAnalysis() ),
-    'LDA': (True, LinearDiscriminantAnalysis() ),
     'NaiveBayes': (True,  GaussianNB() ),
     'RadiusNeighborsClassifier': (True, RadiusNeighborsClassifier() ),
     'SGDClassifier': (True, SGDClassifier() ),
     'RidgeClassifierCV': (True, RidgeClassifierCV() ),
     'RidgeClassifier': (True, RidgeClassifier() ),
     'PassiveAggressiveClassifier': (True, PassiveAggressiveClassifier() ),
-    'CalibratedClassifierCV': (True, CalibratedClassifierCV() ),
     'LabelPropagation': (True, LabelPropagation() ),
     'LabelSpreading': (False, LabelSpreading() ),
-    'LinearSVC': (True, LinearSVC() ),
-    'LogisticRegressionCV': (True, LogisticRegressionCV() ),
     'MultinomialNB': (True, MultinomialNB() ),
     'NearestCentroid': (True, NearestCentroid() ),
     'Perceptron': (True, Perceptron() ),
-    #'OneClassSVM': (True, OneClassSVM() ),
-    #'ClassifierChain': (True, ClassifierChain() ),
-    #'MultiOutputClassifier': (True, MultiOutputClassifier() ),
-    #'OutputCodeClassifier': (True, OutputCodeClassifier() ),
-    #'OneVsOneClassifier': (True, OneVsOneClassifier() ),
-    #'OneVsRestClassifier': (True, OneVsRestClassifier() ),
 }
 
 
@@ -160,9 +157,10 @@ feature_set = {
     'year': True, # extracted feature
     'month': True, # extracted feature
     'goal_exceeded': True, # extracted feature
-    'divergence': False # extracted feature, contains negative value!
+    'divergence': True # extracted feature, negative value
 }
 # labels = ['state', 'id', 'name']
+
 
 
 def handle_arguments(argv):
@@ -187,7 +185,27 @@ def handle_arguments(argv):
     return (skipimport, skipstats, slice_value)
 
 
+def univariate_selection(X, y):
+
+    # Applying SelectKBest class to extract top best features:
+    bestfeatures = SelectKBest(score_func=chi2, k='all')
+    fit = bestfeatures.fit(X, y)
+
+    data_scores = pd.DataFrame(fit.scores_)
+    data_columns = pd.DataFrame(X.columns)
+    # Concat two dataframes for better visualization:
+    feature_scores_df = pd.concat([data_columns, data_scores], axis=1)
+    feature_scores_df.columns = ['Feature', 'Score']
+    feature_scores_df = feature_scores_df.round(5)
+    feature_scores_df = feature_scores_df.sort_values(by=['Score'], ascending=False)
+
+    return feature_scores_df
+
+
+
 def main():
+    print('>>> Starting campaign success predictor, v2.0, 29.07.2019, by Julius Steidl >>>')
+
     # Handling user arguments, if existing:
     skipimport, skipstats, slice_value = handle_arguments(sys.argv)
 
@@ -222,7 +240,7 @@ def main():
 
     # Filtering out entries (=campaigns) with 'canceled' or 'live' state values (as label).
     # => Just using 'successful' and 'failed' campaigns for estimation:
-    data_filtered = data.loc[data['state'].isin(['successful','failed'])]
+    data_filtered = data.loc[data['state'].isin(state_filter)]
 
     # Encoding string-value columns to logical datatypes (binary & ordinal) for estimation:
     preprocessing = Preprocessing(data_filtered)
@@ -252,18 +270,8 @@ def main():
     # b) Automatic Feature-Selection:
 
     # Univariate automatic feature selection:
+    feature_scores_df = univariate_selection(X, y)
 
-    # Applying SelectKBest class to extract top best features:
-    bestfeatures = SelectKBest(score_func=chi2, k='all')
-    fit = bestfeatures.fit(X, y)
-
-    data_scores = pd.DataFrame(fit.scores_)
-    data_columns = pd.DataFrame(X.columns)
-    # Concat two dataframes for better visualization:
-    feature_scores_df = pd.concat([data_columns, data_scores], axis=1)
-    feature_scores_df.columns = ['Feature', 'Score']
-    feature_scores_df = feature_scores_df.round(5)
-    feature_scores_df = feature_scores_df.sort_values(by=['Score'], ascending=False)
 
     # Removing features with low variance:
     #remover = VarianceThreshold(threshold=(.8 * (1 - .8)))
@@ -303,7 +311,7 @@ def main():
 
     # VI. Estimation: Prediction & Classification:
 
-    print('\n================================= ESTIMATING ================================\n')
+    #print('\n================================= ESTIMATING ================================\n')
 
     estimate = Estimate(model_selection, X_test, y_test, X_train, y_train, feature_subset)
     results_df, importances_df = estimate.results
@@ -318,7 +326,6 @@ def main():
     plt.savefig('feature_importances.png')
     plt.show()
 
-
     print('> Features with highest importance (only from models supporting feature_importances_):')
     importances_sum = importances_df.sum(axis = 0, skipna = True)
     importances_sum_df = importances_sum.to_frame()
@@ -330,8 +337,9 @@ def main():
 
     print('\n> Univariate automatic feature selection:  Applying SelectKBest class to extract best features:')
     print(feature_scores_df)
-    #print(feature_scores_df.round({'Score': 3}))
-    #print(feature_scores_df.nlargest(20,'Score', ))  #print n best features
+    feature_scores_df.plot.bar(x='Feature', logy=True)
+    plt.savefig('univariate_selection.png')
+    plt.show()
 
 
     print('\n========================== PREDICTION MODEL RANKING ==========================\n')

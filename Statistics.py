@@ -16,10 +16,15 @@ class Statistics:
 
         campaign_count, c = data.shape
         successful = data[data['state'].str.contains('successful')]
-        unsuccessful = data[data['state'].str.contains('failed','canceled')]
+        unsuccessful = data[data['state'].str.contains('failed')]
+        canceled = data[data['state'].str.contains('canceled')]
+        live = data[data['state'].str.contains('live')]
 
         success_count, c = successful.shape
         unsuccess_count, c = unsuccessful.shape
+        canceled_count , c = canceled.shape
+        live_count, c = live.shape
+
         backers_success = successful['backers_count'].sum()
         backers_unsuccess = unsuccessful['backers_count'].sum()
         pledged_success = successful['converted_pledged_amount'].sum()
@@ -30,8 +35,12 @@ class Statistics:
         pick_unsuccess = unsuccessful['staff_pick'].sum()
         spot_success = successful['spotlight'].sum()
         spot_unsuccess = unsuccessful['staff_pick'].sum()
+        goal_exceeded_success = successful['goal_exceeded'].sum()
+        goal_exceeded_unsuccess = unsuccessful['goal_exceeded'].sum()
         duration_days_success = successful['duration_days'].sum()
         duration_days_unsuccess = unsuccessful['duration_days'].sum()
+        divergence_success = successful['divergence'].sum()
+        divergence_unsuccess = unsuccessful['divergence'].sum()
 
         print('\n========================= EXPLORATORY DATA ANALYSIS =========================')
 
@@ -39,25 +48,34 @@ class Statistics:
         print('\t- backers avg.:\t',round(float((backers_success+backers_unsuccess)/float(campaign_count))))
         print('\t- pledged avg.:\t',round(float((pledged_success+pledged_unsuccess)/float(campaign_count))),'$')
         print('\t- goal avg.:\t',round(float((goal_success+goal_unsuccess)/float(campaign_count))),'$')
+        print('\t- goal exceeded: ',round(100 * float(goal_exceeded_success+goal_exceeded_unsuccess)/float(campaign_count)),'%')
         print('\t- staff pick:\t',round(100 * float(pick_success+pick_unsuccess)/float(campaign_count)),'%')
         print('\t- spotlight:\t',round(100 * float(spot_success+spot_unsuccess)/float(campaign_count)),' %')
+        print('\t- divergence avg.: ',round(float((divergence_success+divergence_unsuccess)/float(campaign_count))),'$')
         print('\t- duration_days avg.:',round(float((duration_days_success+duration_days_unsuccess)/float(campaign_count))),'days')
 
         print('\n> successful:  ',round(100 * float(success_count)/float(campaign_count)),'%')
         print('\t- backers avg.:\t',round(float(backers_success/float(success_count))))
         print('\t- pledged avg.:\t',round(float(pledged_success/float(success_count))),'$')
         print('\t- goal avg.:\t',round(float(goal_success/float(success_count))),'$')
+        print('\t- goal exceeded: ',round(100 * float(goal_exceeded_success)/float(success_count)),'%')
         print('\t- staff pick:\t',round(100 * float(pick_success)/float(success_count)),'%')
         print('\t- spotlight:\t',round(100 * float(spot_success)/float(success_count)),'%')
+        print('\t- divergence avg.: ',round(float(divergence_success/float(success_count))),'$')
         print('\t- duration_days avg.:',round(float((duration_days_success)/float(success_count))),'days')
 
         print('\n> unsuccessful:  ',round(100 * float(unsuccess_count)/float(campaign_count)),'%')
         print('\t- backers avg.:\t',round(float(backers_unsuccess/float(unsuccess_count))))
         print('\t- pledged avg.:\t',round(float(pledged_unsuccess/float(unsuccess_count))),'$')
         print('\t- goal avg.:\t',round(float(goal_unsuccess/float(unsuccess_count))),'$')
+        print('\t- goal exceeded: ',round(100 * float(goal_exceeded_unsuccess)/float(success_count)),'%')
         print('\t- staff pick:\t',round(100 * float(pick_unsuccess)/float(unsuccess_count)),'%')
         print('\t- spotlight:\t',round(100 * float(spot_unsuccess)/float(unsuccess_count)),'%')
+        print('\t- divergence avg.: ',round(float(divergence_unsuccess/float(unsuccess_count))),'$')
         print('\t- duration_days avg.:',round(float((duration_days_unsuccess)/float(unsuccess_count))),'days')
+
+        print('\n> canceled:  ',round(100 * float(canceled_count)/float(campaign_count)),'%')
+        print('> live:  ',round(100 * float(live_count)/float(campaign_count)),'%')
 
         print('\n============================ TOP (UN)SUCCESSFUL =============================')
 
